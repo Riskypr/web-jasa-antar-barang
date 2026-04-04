@@ -38,7 +38,7 @@ Follow these steps to set up the project on a new machine:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/web-jasa-antar.git
+git clone https://github.com/riskypr/web-jasa-antar.git
 cd web-jasa-antar
 ```
 
