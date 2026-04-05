@@ -83,7 +83,7 @@ export default function MapPicker({ setPoints }) {
       <MapContainer
         center={[-3.3, 114.6]}
         zoom={13}
-        className="h-[300px] md:h-[400px] rounded-xl"
+        className="h-[500px] md:h-[600px]"
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 

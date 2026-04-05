@@ -1,54 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
 import dynamic from "next/dynamic";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import OrderCard from "@/components/OrderCard";
+import useOrder from "@/hooks/useOrder";
+import { createPayment } from "@/services/api";
 
 const MapPicker = dynamic(() => import("@/components/MapPicker"), {
   ssr: false,
 });
-export default function OrderPage() {
+
+export default function Home() {
   const [points, setPoints] = useState([]);
-  const [distance, setDistance] = useState(null);
-  const [duration, setDuration] = useState(null);
 
-  const [pickupAddress, setPickupAddress] = useState("");
-  const [destinationAddress, setDestinationAddress] = useState("");
-
-  // 🔥 realtime hitung
-  useEffect(() => {
-    async function fetchData() {
-      if (points.length < 2) return;
-
-      // distance + ETA
-      const res = await axios.post("/api/distance", {
-        from: points[0],
-        to: points[1],
-      });
-
-      setDistance(res.data.distance);
-      setDuration(res.data.duration);
-
-      // alamat jemput
-      const pickup = await axios.post("/api/geocode", {
-        lat: points[0].lat,
-        lng: points[0].lng,
-      });
-
-      setPickupAddress(pickup.data.address);
-
-      // alamat tujuan
-      const dest = await axios.post("/api/geocode", {
-        lat: points[1].lat,
-        lng: points[1].lng,
-      });
-
-      setDestinationAddress(dest.data.address);
-    }
-
-    fetchData();
-  }, [points]);
+  const {
+    distance,
+    duration,
+    pickupAddress,
+    destinationAddress,
+  } = useOrder(points);
 
   async function pay() {
     const amount = distance ? Math.round(distance * 3000 + 2000) : 0;
@@ -58,7 +30,7 @@ export default function OrderPage() {
       return;
     }
 
-    const res = await axios.post("/api/payment", { amount });
+    const res = await createPayment(amount);
 
     if (!res.data.redirect_url) {
       alert("Gagal mendapatkan link pembayaran");
@@ -69,22 +41,22 @@ export default function OrderPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-100 p-4">
+    <main className="min-h-screen bg-gray-100">
+      <Navbar />
+      <div className="px-0">
+        <MapPicker setPoints={setPoints} />
+      </div>
 
-      <h1 className="text-xl font-bold mb-4">
-        🚚 Order Antar Barang
-      </h1>
-
-      <MapPicker setPoints={setPoints} />
-
-      <OrderCard
-        distance={distance}
-        duration={duration}
-        pickupAddress={pickupAddress}
-        destinationAddress={destinationAddress}
-        onPay={pay}
-      />
-
+      <div className="md:px-4 md:pb-6 relative z-[9999] -mt-24">
+        <OrderCard
+          distance={distance}
+          duration={duration}
+          pickupAddress={pickupAddress}
+          destinationAddress={destinationAddress}
+          onPay={pay}
+        />
+      </div>
+      <Footer />
     </main>
   );
 }

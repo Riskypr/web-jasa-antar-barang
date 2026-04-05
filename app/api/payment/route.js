@@ -33,8 +33,8 @@ export async function POST(req) {
 
     const data = await res.json();
 
-    console.log("MIDTRANS RESPONSE:", data);
-    console.log(serverKey);
+    // console.log("MIDTRANS RESPONSE:", data);
+    // console.log(serverKey);
 
     // 🔥 HANDLE ERROR
     if (data.error_messages) {

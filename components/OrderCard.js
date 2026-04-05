@@ -9,23 +9,29 @@ export default function OrderCard({
   const harga = distance ? Math.round(distance * tarif + 2000) : 0;
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-5 mt-4">
+  <div className="bg-white rounded-t-2xl p-5 shadow-[0_-4px_10px_rgba(0,0,0,0.1)] md:rounded-2xl md:shadow-lg">
 
       <h3 className="font-semibold mb-3">Perjalanan</h3>
 
       {/* Timeline */}
       <div className="flex items-start gap-3 mb-4">
         <div className="flex flex-col items-center">
-          <div className="w-3 h-3 bg-green-500 rounded-full">
-            
-          </div>
+          <img
+            src="/pickup.png"
+            alt="Jemput"
+            className="w-6 h-6"
+          />
           <div className="w-0.5 h-12 bg-gray-300"></div>
-          <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+          <img
+            src="/destination.png"
+            alt="Tujuan"
+            className="w-6 h-6"
+          />
         </div>
 
         <div className="text-sm text-gray-700">
           <div>
-            <p className="font-medium">Jemput</p>
+            <p className="font-medium">Lokasi Penjemputan</p>
             <p className="text-gray-500 text-xs">
               {pickupAddress || "Menunggu lokasi..."}
             </p>
@@ -42,29 +48,38 @@ export default function OrderCard({
 
       {/* Info */}
       <div className="border-t pt-4">
-        <p className="text-sm text-gray-500">
-          Tarif: Rp 3.000 / km
-        </p>
+        <div className="rounded-2xl border border-gray-400 bg-gray-100 p-4 backdrop-blur-sm">
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gray-700/80">
+                Jarak
+              </p>
+              <p className="mt-1 text-sm font-semibold text-gray-900">
+                {distance ? distance.toFixed(2) : "-"} km
+              </p>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gray-700/80">
+                Estimasi
+              </p>
+              <p className="mt-1 text-sm font-semibold text-gray-900">
+                {duration ? duration.toFixed(0) : "-"} menit
+              </p>
+            </div>
+          </div>
+        </div>
 
-        <p className="text-sm text-gray-500">
-          Jarak: {distance ? distance.toFixed(2) : "-"} km
-        </p>
-
-        <p className="text-sm text-gray-500">
-          Estimasi: {duration ? duration.toFixed(0) : "-"} menit
-        </p>
-
-        <h2 className="text-xl font-bold mt-2">
-          {distance ? `Rp ${harga.toLocaleString()}` : "Menunggu titik..."}
+        <h2 className="text-xl font-bold mt-4">
+          {distance ? `Rp ${harga.toLocaleString()}` : "..."}
         </h2>
       </div>
 
       <button
         onClick={onPay}
         disabled={!distance}
-        className="w-full mt-4 bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition disabled:bg-gray-300"
+        className="w-full mt-4 bg-black text-white font-poppins font-semibold py-3 rounded-xl hover:bg-green-700 transition disabled:bg-gray-300"
       >
-        Bayar Sekarang
+        Order JaBarin
       </button>
     </div>
   );
