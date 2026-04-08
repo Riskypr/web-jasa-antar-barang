@@ -1,85 +1,143 @@
+"use client";
+
+import { MapPin, Clock, Navigation, CreditCard } from "@/components/icons";
+
 export default function OrderCard({
   distance,
   duration,
   pickupAddress,
   destinationAddress,
   onPay,
+  vehicle,
+  paymentStatus,
 }) {
-  const tarif = 3000; // align with payment API
-  const harga = distance ? Math.round(distance * tarif + 2000) : 0;
+  // 🔒 SAFE GUARD
+  if (!vehicle) {
+    return (
+      <div className="bg-white rounded-2xl p-5 border text-center text-sm text-gray-500">
+        Pilih armada terlebih dahulu 🚗
+      </div>
+    );
+  }
+
+  const Icon = vehicle.icon;
+
+  const harga = distance
+    ? Math.round(distance * vehicle.price + 2000)
+    : 0;
 
   return (
-  <div className="bg-white rounded-t-2xl p-5 shadow-[0_-4px_10px_rgba(0,0,0,0.1)] md:rounded-2xl md:shadow-lg">
+    <div className="bg-white rounded-2xl p-5 ">
 
-      <h3 className="font-semibold mb-3">Perjalanan</h3>
-
-      {/* Timeline */}
-      <div className="flex items-start gap-3 mb-4">
-        <div className="flex flex-col items-center">
-          <img
-            src="/pickup.png"
-            alt="Jemput"
-            className="w-6 h-6"
-          />
-          <div className="w-0.5 h-12 bg-gray-300"></div>
-          <img
-            src="/destination.png"
-            alt="Tujuan"
-            className="w-6 h-6"
-          />
+      {/* 🔥 HEADER */}
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <h3 className="font-semibold text-lg text-gray-800">
+            Detail Order
+          </h3>
+          <p className="text-xs text-gray-400">
+            Cek kembali sebelum pembayaran
+          </p>
         </div>
 
-        <div className="text-sm text-gray-700">
+        <div className="flex items-center gap-2 text-xs bg-gray-100 px-3 py-1.5 rounded-full">
+          <Icon size={14} className="text-gray-600" />
+          <span className="text-gray-700 font-medium">
+            {vehicle.name}
+          </span>
+        </div>
+      </div>
+
+      {/* 📍 LOKASI */}
+      <div className="space-y-4 text-sm mb-5">
+
+        {/* PICKUP */}
+        <div className="flex items-start gap-3">
+          <div className="bg-green-100 p-2 rounded-full">
+            <MapPin size={14} className="text-green-600" />
+          </div>
           <div>
-            <p className="font-medium">Lokasi Penjemputan</p>
-            <p className="text-gray-500 text-xs">
-              {pickupAddress || "Menunggu lokasi..."}
-            </p>
-          </div>
-
-          <div className="mt-4">
-            <p className="font-medium">Tujuan</p>
-            <p className="text-gray-500 text-xs">
-              {destinationAddress || "Menunggu lokasi..."}
+            <p className="text-gray-400 text-xs">Jemput</p>
+            <p className="text-gray-800 line-clamp-2">
+              {pickupAddress || "-"}
             </p>
           </div>
         </div>
-      </div>
 
-      {/* Info */}
-      <div className="border-t pt-4">
-        <div className="rounded-2xl border border-gray-400 bg-gray-100 p-4 backdrop-blur-sm">
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gray-700/80">
-                Jarak
-              </p>
-              <p className="mt-1 text-sm font-semibold text-gray-900">
-                {distance ? distance.toFixed(2) : "-"} km
-              </p>
-            </div>
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gray-700/80">
-                Estimasi
-              </p>
-              <p className="mt-1 text-sm font-semibold text-gray-900">
-                {duration ? duration.toFixed(0) : "-"} menit
-              </p>
-            </div>
+        {/* DESTINATION */}
+        <div className="flex items-start gap-3">
+          <div className="bg-red-100 p-2 rounded-full">
+            <Navigation size={14} className="text-red-600" />
+          </div>
+          <div>
+            <p className="text-gray-400 text-xs">Tujuan</p>
+            <p className="text-gray-800 line-clamp-2">
+              {destinationAddress || "-"}
+            </p>
           </div>
         </div>
 
-        <h2 className="text-xl font-bold mt-4">
-          {distance ? `Rp ${harga.toLocaleString()}` : "..."}
-        </h2>
       </div>
 
+      {/* 📊 INFO */}
+      <div className="grid grid-cols-2 gap-3 text-sm mb-5">
+
+        <div className="bg-gray-50 p-3 rounded-xl flex items-center gap-2">
+          <Navigation size={16} className="text-gray-500" />
+          <div>
+            <p className="text-gray-400 text-xs">Jarak</p>
+            <p className="text-gray-700 font-medium">
+              {distance ? distance.toFixed(2) : "-"} km
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-gray-50 p-3 rounded-xl flex items-center gap-2">
+          <Clock size={16} className="text-gray-500" />
+          <div>
+            <p className="text-gray-400 text-xs">Durasi</p>
+            <p className="text-gray-700 font-medium">
+              {duration ? duration.toFixed(0) : "-"} menit
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      {/* 💰 HARGA */}
+      <div className="mb-4 border-t pt-4">
+        <div className="flex justify-between items-center">
+          <p className="text-gray-500 text-sm">
+            Total Pembayaran
+          </p>
+          <h2 className="text-xl font-bold text-gray-900">
+            {distance ? `Rp ${harga.toLocaleString()}` : "..."}
+          </h2>
+        </div>
+      </div>
+
+      {/* 💳 STATUS */}
+      {paymentStatus && (
+        <div className="mb-3 p-3 rounded-xl bg-green-50 text-green-600 text-xs border">
+          Pembayaran: {paymentStatus}
+        </div>
+      )}
+
+      {/* 🚚 STATUS ORDER */}
+      {paymentStatus === "PAID" && (
+        <div className="mb-3 p-3 rounded-xl bg-blue-50 text-blue-600 text-xs border">
+          Pesanan sedang diproses 🚚
+        </div>
+      )}
+
+      {/* 🔥 BUTTON */}
       <button
         onClick={onPay}
-        disabled={!distance}
-        className="w-full mt-4 bg-black text-white font-poppins font-semibold py-3 rounded-xl hover:bg-green-700 transition disabled:bg-gray-300"
+        disabled={!distance || paymentStatus === "PAID"}
+        className="w-full mt-3 flex items-center justify-center gap-2 bg-gray-900 text-white font-semibold py-3 rounded-xl hover:opacity-90 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
       >
-        Order JaBarin
+        <CreditCard size={18} />
+        {paymentStatus === "PAID" ? "Selesai" : "Bayar Sekarang"}
       </button>
     </div>
   );

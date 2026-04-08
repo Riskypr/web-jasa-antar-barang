@@ -1,80 +1,196 @@
-import { useState } from 'react';
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Menu, X } from '@/components/icons';
+import { Menu, X, User, Home, Package, Rocket, LogOut, History } from '@/components/icons';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [dropdown, setDropdown] = useState(false);
+  const router = useRouter();
+  const dropdownRef = useRef();
+
+  // 🔥 ambil user
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (!token) return;
+
+    fetch('/api/auth/me', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.user) setUser(data.user);
+      })
+      .catch(() => {
+        localStorage.removeItem('token');
+      });
+  }, []);
+
+  // 🔥 klik luar untuk close dropdown
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // 🔥 logout
+  const handleLogout = () => {
+    localStorage.clear();
+    setUser(null);
+    router.push('/login');
+  };
+
+  // 🔥 helper close mobile
+  const closeMobile = () => setIsOpen(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-white shadow" style={{ zIndex: 9999 }}>
+    <nav className="fixed top-0 left-0 right-0 z-[9999] bg-white shadow px-6 py-4 flex justify-between items-center">
+
+      {/* LOGO */}
       <div className="flex items-center gap-3">
-        <img
-          src="/truck.png"
-          alt="JasDar Logo"
-          className="w-8 h-8"
-        />
-        <div className="flex flex-col">
-          <h1 className="text-xl font-bold text-gray-800 p-0 m-0">
-            JaBarin
-          </h1>
-          <p className="text-[10px] sm:text-xs font-normal text-gray-500 -mt-1.5 m-0">
-            Jasa Antar Barang
-          </p>
+        <img src="/truck.png" className="w-8 h-8" />
+        <div>
+          <h1 className="font-bold text-gray-800">JaBarin</h1>
+          <p className="text-xs text-gray-500">Jasa Antar Barang</p>
         </div>
       </div>
 
-      {/* Desktop Menu */}
-      <div className="hidden md:flex items-center space-x-6">
-        <Link href="/#hero" className="text-gray-700 hover:text-slate-600 font-medium">
-          Home
-        </Link>
-        <Link href="/#features" className="text-gray-700 hover:text-slate-600 font-medium">
-          Features
-        </Link>
-        <Link href="/#services" className="text-gray-700 hover:text-slate-600 font-medium">
-          Services
-        </Link>
+      {/* DESKTOP MENU */}
+      <div className="hidden md:flex gap-6">
+        <Link href="/#hero">Home</Link>
+        <Link href="/#features">Features</Link>
+        <Link href="/#services">Services</Link>
       </div>
 
-      {/* Desktop Auth */}
-      <div className="hidden md:flex items-center space-x-4">
-        <Link href="/login" className="text-gray-700 hover:text-slate-600 font-medium">
-          Masuk
-        </Link>
-        <Link href="/register" className="bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-slate-700 font-medium">
-          Daftar
-        </Link>
+      {/* DESKTOP AUTH */}
+      <div className="hidden md:flex items-center gap-4 relative">
+
+        {!user ? (
+          <>
+            <Link href="/login">Masuk</Link>
+            <Link href="/register" className="bg-black text-white px-4 py-2 rounded-md">
+              Daftar
+            </Link>
+          </>
+        ) : (
+          <div className="relative" ref={dropdownRef}>
+
+            {/* AVATAR */}
+            <button
+              onClick={() => setDropdown(!dropdown)}
+              className="w-10 h-10 rounded-full bg-gray-900 text-white font-bold flex items-center justify-center shadow"
+            >
+              {user.name?.charAt(0).toUpperCase()}
+            </button>
+
+            {/* DROPDOWN */}
+            {dropdown && (
+              <div className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-xl border p-6 animate-fadeIn">
+
+                <div className="mb-3">
+                  <p className="font-semibold text-gray-800">{user.name}</p>
+                  <p className="text-[12px] text-gray-500 truncate max-w-[200px]">{user.email}</p>
+                </div>
+
+                <div className="border-t pt-2 space-y-3 font-medium text-sm  ">
+                  <Link href="/profile" className="flex items-center gap-2 hover:text-gray-500">
+                    <User size={18} /> Profil
+                  </Link>
+
+                  <Link href="/order/history" onClick={closeMobile} className="flex items-center gap-2 my-3 hover:text-gray-500">
+                  <History size={18} /> Riwayat Order
+                </Link>
+
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 text-red-500 hover:text-red-600"
+                  >
+                    <LogOut size={18} /> Logout
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Mobile Menu Button */}
-      <div className="md:hidden flex items-center space-x-4">
-        <button onClick={() => setIsOpen(!isOpen)} className="text-gray-700 hover:text-slate-600">
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
+      {/* MOBILE BUTTON */}
+      <div className="md:hidden">
+        <button onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? <X size={26} /> : <Menu size={26} />}
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* 🔥 OVERLAY */}
       {isOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg border-t">
-          <div className="flex flex-col space-y-4 px-6 py-4">
-            <Link href="/#hero" className="text-gray-700 hover:text-slate-600 font-medium" onClick={() => setIsOpen(false)}>
-              Home
-            </Link>
-            <Link href="/#features" className="text-gray-700 hover:text-slate-600 font-medium" onClick={() => setIsOpen(false)}>
-              Features
-            </Link>
-            <Link href="/#services" className="text-gray-700 hover:text-slate-600 font-medium" onClick={() => setIsOpen(false)}>
-              Services
-            </Link>
-            <Link href="/login" className="text-gray-700 hover:text-slate-600 font-medium" onClick={() => setIsOpen(false)}>
-              Masuk
-            </Link>
-            <Link href="/register" className="bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-slate-700 font-medium text-center" onClick={() => setIsOpen(false)}>
-              Daftar
-            </Link>
+        <div
+          className="fixed inset-0 bg-black/40 z-[9999]"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* MOBILE MENU */}
+      <div
+        className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-[9999] transform transition-transform duration-300
+        ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+      >
+        <div className="p-6 flex flex-col gap-6 font-medium">
+
+          <button onClick={() => setIsOpen(false)} className="self-end bg-black text-white p-2 rounded-xl">
+            <X size={24} />
+          </button>
+
+          <Link href="/#hero" onClick={closeMobile} className="flex items-center gap-2 px-4 pt-4 text-xl">
+            <Home size={20} /> Home
+          </Link>
+          <Link href="/#features" onClick={closeMobile} className="flex items-center gap-2 px-4 text-xl">
+            <Rocket size={20} /> Features
+          </Link>
+          <Link href="/#services" onClick={closeMobile} className="flex items-center gap-2 px-4 text-xl">
+            <Package size={20} />Services
+          </Link>
+
+          <div className="border-t pt-4 text-lg absolute bottom-0 left-0 w-full px-6 pb-6">
+            {!user ? (
+              <>
+                <Link href="/login" onClick={closeMobile} className="block px-4 py-2">
+                  Masuk
+                </Link>
+                <Link href="/register" onClick={closeMobile} className="block mt-2 bg-black text-center text-white px-4 py-2 rounded-full">
+                  Daftar
+                </Link>
+              </>
+            ) : (
+              <>
+                {/* <p className="font-semibold">{user.name}</p>
+                <p className="text-sm text-gray-500">{user.email}</p> */}
+
+                <Link href="/profile" onClick={closeMobile} className="flex items-center gap-2 my-2 mx-4">
+                  <User size={18} /> Profil
+                </Link>
+                <Link href="/order/history" onClick={closeMobile} className="flex items-center gap-2 my-3 mx-4">
+                  <History size={18} /> Riwayat Order
+                </Link>
+
+                <button onClick={handleLogout} className="flex items-center gap-2 bg-red-500 text-white mt-6 py-2 px-4 w-full rounded-full items-center justify-center">
+                  <LogOut size={18} /> Logout
+                </button>
+              </>
+            )}
           </div>
         </div>
-      )}
+      </div>
     </nav>
   );
 }

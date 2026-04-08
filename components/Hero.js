@@ -1,6 +1,21 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
 import { Package, ArrowRight, MapPin, HandCoins } from "@/components/icons";
 
 export default function Hero() {
+  const router = useRouter();
+
+  const handleOrder = () => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      router.push('/login');
+    } else {
+      router.push('/order');
+    }
+  };
+
   return (
     <section
       className="relative py-20 px-4 mt-5 bg-cover bg-center bg-no-repeat h-screen overflow-hidden"
@@ -18,31 +33,29 @@ export default function Hero() {
               <Package size={16} />
               Jasa antar Barang
             </span>
+
             <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
               Kirim barang lebih mudah dengan kontrol peta yang jelas
             </h2>
+
             <p className="mt-4 max-w-xl text-base leading-7 text-gray-200">
               Pilih titik jemput dan tujuan langsung di MapPicker, lihat estimasi jarak, dan selesaikan pesanan tanpa bingung.
             </p>
 
             <div className="mt-8 items-center">
-              <a
-                href="/order"
-                className="inline-flex items-center justify-center gap-2 rounded-xl lg:rounded-full border border-white bg-white px-6 py-4 text-md shadow-md font-semibold text-black transition hover:bg-gray-200 group"
+              <button
+                onClick={handleOrder}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-white bg-white px-6 py-4 text-md shadow-md font-semibold text-black transition hover:bg-gray-200 group"
               >
-                Mulai Pesan
+                Pesan Sekarang
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition" />
-              </a>
-
-              {/* <p className="text-sm text-gray-200 hidden">
-                Tampilan ringan, proses cepat, tanpa tampilan yang terlalu ramai.
-              </p> */}
+              </button>
             </div>
           </div>
 
           <div className="grid gap-4">
             <div className="rounded-[1.5rem] border border-slate/20 bg-slate/10 backdrop-blur-sm p-6 md:p-4 flex items-start gap-4">
-              <div className="bg-white text-black p-3 rounded-xl">
+              <div className="bg-white text-black p-3 rounded-full">
                 <HandCoins size={20} />
               </div>
               <div>
@@ -56,7 +69,7 @@ export default function Hero() {
             </div>
 
             <div className="rounded-[1.5rem] border border-slate/20 bg-slate/10 backdrop-blur-sm p-6 md:p-4 flex items-start gap-4">
-              <div className="bg-white text-black p-3 rounded-xl">
+              <div className="bg-white text-black p-3 rounded-full">
                 <MapPin size={20} />
               </div>
               <div>

@@ -6,5 +6,8 @@ export const getDistance = (from, to) =>
 export const getAddress = (lat, lng) =>
   axios.post("/api/geocode", { lat, lng });
 
-export const createPayment = (amount) =>
-  axios.post("/api/payment", { amount });
+export const createPayment = (amount, order_id) =>
+  axios.post("/api/payment", { 
+    amount,
+    order_id, 
+  });

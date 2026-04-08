@@ -1,14 +1,14 @@
 export async function POST(req) {
-  const { amount } = await req.json();
+  const { amount, order_id } = await req.json();
 
-  // Validate amount
-  if (!amount || typeof amount !== 'number' || amount <= 0) {
+  if (!amount || !order_id) {
     return Response.json({
-      error: "Invalid amount. Amount must be a positive number.",
+      error: "Amount & order_id wajib",
     });
   }
 
- const serverKey = process.env.MIDTRANS_SERVER_KEY;
+  const serverKey = process.env.MIDTRANS_SERVER_KEY;
+
   try {
     const res = await fetch(
       "https://app.sandbox.midtrans.com/snap/v1/transactions",
@@ -21,11 +21,16 @@ export async function POST(req) {
         },
         body: JSON.stringify({
           transaction_details: {
-            order_id: "ORDER-" + Date.now(),
+            order_id: order_id, // ✅ PAKAI DARI DB
             gross_amount: Math.floor(amount),
           },
           credit_card: {
             secure: true,
+          },
+
+          // 🔥 INI YANG BIKIN GAK KE example.com
+          callbacks: {
+            finish: "http://localhost:3000/order/success",
           },
         }),
       }
@@ -33,10 +38,6 @@ export async function POST(req) {
 
     const data = await res.json();
 
-    // console.log("MIDTRANS RESPONSE:", data);
-    // console.log(serverKey);
-
-    // 🔥 HANDLE ERROR
     if (data.error_messages) {
       return Response.json({
         error: data.error_messages,

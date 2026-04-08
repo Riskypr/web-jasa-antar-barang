@@ -125,6 +125,13 @@ npm run lint
 web-jasa-antar/
 ├── app/                    # Next.js app directory
 │   ├── api/               # API routes
+|   |   ├── auth/
+|   |   |   ├── login/
+|   |   |   |   ├── login.js
+|   |   |   ├── register/
+|   |   |   |   ├── register.js
+│   │   ├── login/page.js     
+│   │   ├── register/page.js  
 │   │   ├── distance/      # Distance calculation API
 │   │   ├── geocode/       # Geocoding API
 │   │   └── payment/       # Payment processing API
@@ -134,9 +141,13 @@ web-jasa-antar/
 │   └── page.js            # Home page
 ├── components/            # React components
 │   ├── Hero.js           # Hero section
-│   ├── MapPicker.js      # Map interaction component
+│   ├── Features.js       # Features section
+│   ├── Services.js       # Services section
+│   ├── Footer.js         # Footer component
 │   ├── Navbar.js         # Navigation bar
-│   └── OrderCard.js      # Order display card
+│   ├── MapPicker.js      # Map interaction component
+│   ├── OrderCard.js      # Order display card
+│   └── icons/            # Icon components
 ├── hooks/                 # Custom React hooks
 │   └── useOrder.js       # Order management hook
 ├── public/                # Static assets
@@ -150,10 +161,16 @@ web-jasa-antar/
 
 ## Usage
 
-1. **Home Page**: View the hero section and navigate to order
-2. **Order Page**: Select pickup and delivery locations on the map
-3. **Map Interaction**: Click on the map to set locations, view routes
-4. **Order Summary**: Review distance, route, and proceed to payment
+1. **Home Page**: View hero section, service features, and available services
+2. **Order Page**: 
+   - Click on the map to select pickup location
+   - Click again to select delivery destination
+   - View calculated distance and estimated delivery time
+   - Review pickup and destination addresses
+   - Proceed to payment
+3. **Map Interaction**: Interactive map with route visualization using Leaflet Routing Machine
+4. **Address Lookup**: Automatic address resolution via reverse geocoding
+5. **Payment**: Integrate payment processing for order completion
 
 ## Contributing
 

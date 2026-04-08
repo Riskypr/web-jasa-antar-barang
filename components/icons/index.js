@@ -11,7 +11,25 @@ import {
   Utensils,
   Music,
   Menu, 
-  X
+  X,
+  User,
+  LogOut,
+  LayoutDashboard,
+  Settings,
+  Phone,
+  Rocket,
+  Save,
+  CheckCircle,
+  Mail, 
+  Lock, 
+Eye,
+  EyeOff,
+  Bike,
+  Car,
+  Navigation,
+  CreditCard,
+  History
+
 } from "lucide-react";
 
 export {
@@ -27,5 +45,24 @@ export {
   Utensils,
   Music,
   Menu,
-  X
+  X,
+  User,
+  LogOut,
+  LayoutDashboard,
+  Settings,
+  Phone,
+  Rocket,
+  Save,
+  CheckCircle,
+  Mail, 
+  Lock, 
+  Eye, 
+  EyeOff,
+  Bike,
+  Car,
+  Navigation,
+  CreditCard,
+  History
+
+
 };

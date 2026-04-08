@@ -1,6 +1,6 @@
 import { MapPin, Clock, ShieldCheck, HandCoins } from "@/icons";
 
-export default function Content() {
+export default function Features() {
   return (
     <section className="py-12 px-4 ">
       <div className="mx-auto max-w-6xl">

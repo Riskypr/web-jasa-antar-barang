@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String?
+  email     String   @unique
+  phone     String
+  password  String
+  createdAt DateTime @default(now())
+
+  orders    Order[]  
+}
+
+model Order {
+  id                  String   @id @default(uuid())
+  userId              String   
+  vehicle             String
+  pickup_address      String
+  destination_address String
+  distance            Float
+  duration            Float
+  price               Int
+  payment_status      String   @default("pending")
+  order_status        String   @default("menunggu")
+  created_at          DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
