@@ -51,7 +51,8 @@ export default function LoginPage() {
 
       const data = await response.json();
 
-      localStorage.setItem('token', data.token);
+      // localStorage.setItem('token', data.token);
+      document.cookie = `token=${data.token}; path=/`;
       localStorage.setItem('user', JSON.stringify(data.user));
 
       window.dispatchEvent(new Event("userChanged"));

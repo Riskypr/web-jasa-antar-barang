@@ -13,42 +13,10 @@ export default function Navbar() {
   const router = useRouter();
   const dropdownRef = useRef();
 
-  // 🔥 ambil user
-  // useEffect(() => {
-  //   const token = localStorage.getItem('token');
-
-  //   if (!token) return;
-
-  //   fetch('/api/auth/me', {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   })
-  //     .then(res => res.json())
-  //     .then(data => {
-  //       if (data.user) setUser(data.user);
-  //     })
-  //     .catch(() => {
-  //       localStorage.removeItem('token');
-  //     });
-  // }, []);
-
-//   useEffect(() => {
-//   const storedUser = localStorage.getItem("user");
-
-//   if (!storedUser || storedUser === "undefined") return;
-
-//   try {
-//     setUser(JSON.parse(storedUser));
-//   } catch {
-//     localStorage.removeItem("user");
-//   }
-// }, []);
-
-useEffect(() => {
-    const user = getCurrentUser();
-    if (user) setUser(user);
-  }, []);
+  useEffect(() => {
+      const user = getCurrentUser();
+      if (user) setUser(user);
+    }, []);
 
   //  klik luar untuk close dropdown
   useEffect(() => {

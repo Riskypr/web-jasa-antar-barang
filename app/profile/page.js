@@ -5,7 +5,8 @@ import { User } from '@/components/icons';
 import { useToast } from '@/hooks/useToast';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-// import { Save } from 'lucide-react';
+import { getCurrentUser } from "@/services/auth";
+import { useRouter } from "next/navigation";
 import { Save } from '@/components/icons';
 
 export default function ProfilePage() {
@@ -25,29 +26,28 @@ export default function ProfilePage() {
 
     const { success, error } = useToast();
 
-    // 🔥 ambil data user
+    //  ambil data user
+    const router = useRouter();
+
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const currentUser = getCurrentUser();
 
-        if (!token) return;
+        if (!currentUser) {
+            router.push("/login"); // 🔐 proteksi halaman
+            return;
+        }
 
-        fetch('/api/auth/me', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.user) {
-                    setUser(data.user);
-                    setFormData(data.user); // isi form
-                }
-            })
-            .catch(() => error('Gagal mengambil data user'))
-            .finally(() => setLoading(false));
+        setUser(currentUser);
+        setFormData({
+            name: currentUser.name || '',
+            email: currentUser.email || '',
+            phone: currentUser.phone || '',
+        });
+
+        setLoading(false);
     }, []);
 
-    // 🔥 handle input profile
+    //  handle input profile
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -56,7 +56,7 @@ export default function ProfilePage() {
         }));
     };
 
-    // 🔥 update profile
+    // update profile
     const handleUpdateProfile = async (e) => {
         e.preventDefault();
 
@@ -73,6 +73,11 @@ export default function ProfilePage() {
             });
 
             if (!res.ok) throw new Error('Gagal update profile');
+
+            // update local user
+            setUser(formData);
+            localStorage.setItem("user", JSON.stringify(formData));
+            window.dispatchEvent(new Event("userChanged"));
 
             success('Profil berhasil diperbarui');
 
