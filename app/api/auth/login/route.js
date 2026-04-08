@@ -26,7 +26,16 @@ export async function POST(req) {
       { expiresIn: "1d" }
     );
 
-    return Response.json({ message: "Login berhasil", token });
+    return Response.json({
+      message: "Login berhasil",
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+      },
+    });
   } catch (error) {
     return Response.json({ error: "Terjadi kesalahan" }, { status: 500 });
   }

@@ -20,11 +20,13 @@ export default function LoginPage() {
   const { success, error } = useToast();
 
   useEffect(() => {
-    if (searchParams.get('registered')) {
+    const registered = searchParams.get('registered');
+
+    if (registered) {
       success('Pendaftaran berhasil, silakan login!');
-      router.replace('/login');
+      router.replace('/login'); 
     }
-  }, []);
+  }, [searchParams]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,6 +53,8 @@ export default function LoginPage() {
 
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+
+      window.dispatchEvent(new Event("userChanged"));
 
       success('Login berhasil!');
 

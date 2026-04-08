@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Menu, X, User, Home, Package, Rocket, LogOut, History } from '@/components/icons';
 import { useRouter } from 'next/navigation';
+import { getCurrentUser } from '@/services/auth'; 
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,26 +14,43 @@ export default function Navbar() {
   const dropdownRef = useRef();
 
   // 🔥 ambil user
-  useEffect(() => {
-    const token = localStorage.getItem('token');
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
 
-    if (!token) return;
+  //   if (!token) return;
 
-    fetch('/api/auth/me', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.user) setUser(data.user);
-      })
-      .catch(() => {
-        localStorage.removeItem('token');
-      });
+  //   fetch('/api/auth/me', {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   })
+  //     .then(res => res.json())
+  //     .then(data => {
+  //       if (data.user) setUser(data.user);
+  //     })
+  //     .catch(() => {
+  //       localStorage.removeItem('token');
+  //     });
+  // }, []);
+
+//   useEffect(() => {
+//   const storedUser = localStorage.getItem("user");
+
+//   if (!storedUser || storedUser === "undefined") return;
+
+//   try {
+//     setUser(JSON.parse(storedUser));
+//   } catch {
+//     localStorage.removeItem("user");
+//   }
+// }, []);
+
+useEffect(() => {
+    const user = getCurrentUser();
+    if (user) setUser(user);
   }, []);
 
-  // 🔥 klik luar untuk close dropdown
+  //  klik luar untuk close dropdown
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -44,14 +62,33 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // 🔥 logout
+  // sinkronisasi user 
+  useEffect(() => {
+    const syncUser = () => {
+      const user = getCurrentUser();
+      setUser(user);
+    };
+
+    syncUser();
+
+    window.addEventListener("userChanged", syncUser);
+
+    return () => {
+      window.removeEventListener("userChanged", syncUser);
+    };
+  }, []);
+
+  //  logout
   const handleLogout = () => {
     localStorage.clear();
     setUser(null);
+
+    window.dispatchEvent(new Event("userChanged"));
+
     router.push('/login');
   };
 
-  // 🔥 helper close mobile
+  //  helper close mobile
   const closeMobile = () => setIsOpen(false);
 
   return (
@@ -125,14 +162,13 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* MOBILE BUTTON */}
+    
       <div className="md:hidden">
         <button onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <X size={26} /> : <Menu size={26} />}
         </button>
       </div>
 
-      {/* 🔥 OVERLAY */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/40 z-[9999]"

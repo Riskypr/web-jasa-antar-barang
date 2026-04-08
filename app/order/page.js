@@ -8,12 +8,14 @@ import OrderCard from "@/components/OrderCard";
 import useOrder from "@/hooks/useOrder";
 import { createPayment } from "@/services/api";
 import { Truck, Car, Bike } from "@/components/icons";
+import { getCurrentUser } from "@/services/auth";
 
 const MapPicker = dynamic(() => import("@/components/MapPicker"), {
   ssr: false,
 });
 
 export default function OrderPage() {
+  const user = getCurrentUser();
   const [points, setPoints] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [paymentStatus, setPaymentStatus] = useState(null);
@@ -50,6 +52,7 @@ export default function OrderPage() {
   // 🧾 CREATE ORDER
   async function createOrder(amount) {
     try {
+
       const res = await fetch("/api/order/create", {
         method: "POST",
         headers: {
@@ -62,6 +65,7 @@ export default function OrderPage() {
           distance,
           duration,
           price: amount,
+          userId: user?.id,
         }),
       });
 

@@ -10,9 +10,17 @@ export const isUserLoggedIn = () => {
 
 // Get current user
 export const getCurrentUser = () => {
-  if (typeof window !== 'undefined') {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+  if (typeof window !== "undefined") {
+    const user = localStorage.getItem("user");
+
+    if (!user || user === "undefined") return null; 
+
+    try {
+      return JSON.parse(user);
+    } catch (err) {
+      console.error("Invalid user data in localStorage:", user);
+      return null;
+    }
   }
   return null;
 };

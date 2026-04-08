@@ -1,8 +1,13 @@
 import { prisma } from "@/lib/prisma";
+import { connect } from "node:http2";
 
 export async function POST(req) {
   try {
     const body = await req.json();
+    
+    if (!body.userId) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const order = await prisma.order.create({
       data: {
@@ -12,6 +17,7 @@ export async function POST(req) {
         distance: body.distance,
         duration: body.duration,
         price: body.price,
+        userId: body.userId,
       },
     });
 
