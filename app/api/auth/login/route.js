@@ -36,6 +36,9 @@ export async function POST(req) {
       path: "/",
     });
 
+    console.log("SET TOKEN:", token);
+    console.log("COOKIES AFTER SET:", cookieStore.getAll());
+
     return Response.json({
       message: "Login berhasil",
       token,
