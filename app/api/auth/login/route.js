@@ -26,6 +26,13 @@ export async function POST(req) {
       { expiresIn: "1d" }
     );
 
+     cookies().set('token', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      path: '/',
+    });
+
     return Response.json({
       message: "Login berhasil",
       token,
