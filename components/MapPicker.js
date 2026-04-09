@@ -27,7 +27,7 @@ const pickupIcon = new L.Icon({
 });
 
 const destinationIcon = new L.Icon({
-  iconUrl: "/destination.png",
+  iconUrl: "/Destination.png",
   iconSize: [35, 35],
   shadowUrl: null,
 });
