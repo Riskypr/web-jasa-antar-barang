@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { cookies } from 'next/headers';
 
 export async function POST(req) {
   try {
@@ -26,11 +27,13 @@ export async function POST(req) {
       { expiresIn: "1d" }
     );
 
-     cookies().set('token', token, {
+    const cookieStore = await cookies();
+
+    cookieStore.set("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      path: '/',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax", // Sesuaikan dengan kebutuhan aplikasi Anda (lax, strict, none)
+      path: "/",
     });
 
     return Response.json({
