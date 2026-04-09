@@ -1,11 +1,14 @@
 import { prisma } from "@/lib/prisma";
-import { connect } from "node:http2";
+import { getUserFromRequest } from "@/lib/auth";
 
 export async function POST(req) {
   try {
     const body = await req.json();
-    
-    if (!body.userId) {
+
+    // 🔥 ambil user dari cookie
+    const decoded = getUserFromRequest(req);
+
+    if (!decoded) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -17,7 +20,7 @@ export async function POST(req) {
         distance: body.distance,
         duration: body.duration,
         price: body.price,
-        userId: body.userId,
+        userId: decoded.userId, // 🔥 dari token
       },
     });
 

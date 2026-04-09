@@ -6,15 +6,15 @@ import { Package, ArrowRight, MapPin, HandCoins } from "@/components/icons";
 export default function Hero() {
   const router = useRouter();
 
-  const handleOrder = () => {
-    const token = localStorage.getItem('token');
+const handleOrder = () => {
+  const user = localStorage.getItem('user');
 
-    if (!token) {
-      router.push('/login');
-    } else {
-      router.push('/order');
-    }
-  };
+  if (!user) {
+    router.push('/login');
+  } else {
+    router.push('/order');
+  }
+};
 
   return (
     <section
@@ -50,6 +50,9 @@ export default function Hero() {
                 Pesan Sekarang
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition" />
               </button>
+              <span className="ml-4 mt-2 text-sm text-gray-300 block">
+                19 juta lapangan kerja di bidang logistik
+              </span>
             </div>
           </div>
 

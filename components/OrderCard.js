@@ -11,11 +11,11 @@ export default function OrderCard({
   vehicle,
   paymentStatus,
 }) {
-  // 🔒 SAFE GUARD
+ 
   if (!vehicle) {
     return (
       <div className="bg-white rounded-2xl p-5 border text-center text-sm text-gray-500">
-        Pilih armada terlebih dahulu 🚗
+        Pilih armada terlebih dahulu 
       </div>
     );
   }

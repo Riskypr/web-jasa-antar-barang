@@ -17,12 +17,16 @@ export default function HistoryPage() {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    fetch("/api/order/history")
-      .then((res) => res.json())
-      .then(setOrders);
+fetch("/api/order/history")
+  .then((res) => res.json())
+  .then((data) => {
+    console.log("HISTORY:", data); // 🔥 debug
+    setOrders(Array.isArray(data) ? data : []);
+  });
+     
   }, []);
 
-  // 🔥 ICON ARMADA
+  //  ICON ARMADA
   function getIcon(vehicle) {
     switch (vehicle) {
       case "Motor":
@@ -36,7 +40,7 @@ export default function HistoryPage() {
     }
   }
 
-  // 🎨 STATUS STYLE (FIX HIJAU PAID)
+  //  STATUS STYLE (FIX HIJAU PAID)
   function statusStyle(status) {
     if (status === "paid")
       return "bg-green-100 text-green-600";
@@ -45,7 +49,7 @@ export default function HistoryPage() {
     return "bg-gray-100 text-gray-600";
   }
 
-  // 📅 FORMAT TANGGAL GROUP
+  //  FORMAT TANGGAL GROUP
   function formatGroupDate(date) {
     const today = new Date();
     const d = new Date(date);
@@ -69,7 +73,7 @@ export default function HistoryPage() {
     });
   }
 
-  // 🕒 FORMAT JAM
+  //  FORMAT JAM
   function formatTime(date) {
     return new Date(date).toLocaleTimeString("id-ID", {
       hour: "2-digit",
@@ -77,15 +81,17 @@ export default function HistoryPage() {
     });
   }
 
-  // 🔥 GROUPING
-  const groupedOrders = orders.reduce((acc, order) => {
-    const key = formatGroupDate(order.created_at);
+  //  GROUPING
+  const groupedOrders = Array.isArray(orders)
+    ? orders.reduce((acc, order) => {
+        const key = formatGroupDate(order.created_at);
 
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(order);
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(order);
 
-    return acc;
-  }, {});
+        return acc;
+      }, {})
+    : {};
 
   return (
     <main className="min-h-screen flex flex-col bg-white">

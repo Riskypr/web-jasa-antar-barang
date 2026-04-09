@@ -1,65 +1,52 @@
-// Utility functions untuk authentication
 
-// Check jika user sudah login
+// Check login (pakai user saja)
 export const isUserLoggedIn = () => {
-  if (typeof window !== 'undefined') {
-    return !!localStorage.getItem('token');
+  if (typeof window !== "undefined") {
+    return !!localStorage.getItem("user");
   }
   return false;
 };
 
-// Get current user
+//  Get current user
 export const getCurrentUser = () => {
   if (typeof window !== "undefined") {
     const user = localStorage.getItem("user");
 
-    if (!user || user === "undefined") return null; 
+    if (!user || user === "undefined") return null;
 
     try {
       return JSON.parse(user);
     } catch (err) {
-      console.error("Invalid user data in localStorage:", user);
+      console.error("Invalid user data:", user);
       return null;
     }
   }
   return null;
 };
 
-// Get token
-export const getToken = () => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('token');
-  }
-  return null;
-};
+// ❌ HAPUS INI (sudah tidak dipakai)
+// export const getToken = () => {}
+// export const isTokenValid = () => {}
 
-// Logout user
+
 export const logoutUser = () => {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("user");
+
+    // 🔥 hapus cookie token juga
+    document.cookie = "token=; Max-Age=0; path=/";
   }
 };
 
-// Login user
-export const loginUser = (user, token) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('user', JSON.stringify(user));
-    localStorage.setItem('token', token);
+//  Login (hanya simpan user)
+export const loginUser = (user) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("user", JSON.stringify(user));
   }
 };
 
-// Check jika token valid (expired atau tidak)
-export const isTokenValid = () => {
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('token');
-    return !!token;
-  }
-  return false;
-};
-
-// Format user display
+//  Format nama
 export const formatUserName = (user) => {
-  if (!user) return 'Guest';
-  return user.name || user.email || 'User';
+  if (!user) return "Guest";
+  return user.name || user.email || "User";
 };

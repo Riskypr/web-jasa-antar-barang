@@ -65,7 +65,7 @@ export default function OrderPage() {
           distance,
           duration,
           price: amount,
-          userId: user?.id,
+          // userId: user?.id,
         }),
       });
 

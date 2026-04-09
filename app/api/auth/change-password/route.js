@@ -5,13 +5,22 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(req) {
   try {
-    const authHeader = req.headers.get('authorization');
+    // 🔥 ambil token dari cookie
+    const cookie = req.headers.get("cookie");
 
-    if (!authHeader) {
+    if (!cookie) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const token = authHeader.split(' ')[1];
+    const token = cookie
+      .split("; ")
+      .find((c) => c.startsWith("token="))
+      ?.split("=")[1];
+
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
     const decoded = verifyToken(token);
 
     if (!decoded) {
@@ -30,12 +39,9 @@ export async function POST(req) {
     // 🔥 hash password baru
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 🔥 update ke database
     await prisma.user.update({
       where: { id: decoded.userId },
-      data: {
-        password: hashedPassword,
-      },
+      data: { password: hashedPassword },
     });
 
     return NextResponse.json({
@@ -43,6 +49,7 @@ export async function POST(req) {
     });
 
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ message: 'Server error' }, { status: 500 });
   }
 }

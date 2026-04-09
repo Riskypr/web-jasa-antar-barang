@@ -4,13 +4,21 @@ import { prisma } from '@/lib/prisma';
 
 export async function PUT(req) {
   try {
-    const authHeader = req.headers.get('authorization');
+    const cookie = req.headers.get("cookie");
 
-    if (!authHeader) {
+    if (!cookie) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const token = authHeader.split(' ')[1];
+    const token = cookie
+      .split("; ")
+      .find((c) => c.startsWith("token="))
+      ?.split("=")[1];
+
+    if (!token) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
     const decoded = verifyToken(token);
 
     if (!decoded) {
@@ -19,7 +27,6 @@ export async function PUT(req) {
 
     const { name, email, phone } = await req.json();
 
-    // 🔥 validasi sederhana
     if (!name || !email) {
       return NextResponse.json(
         { message: 'Nama dan email wajib diisi' },
@@ -27,13 +34,10 @@ export async function PUT(req) {
       );
     }
 
-    // 🔥 cek email sudah dipakai user lain
     const existingEmail = await prisma.user.findFirst({
       where: {
         email,
-        NOT: {
-          id: decoded.userId,
-        },
+        NOT: { id: decoded.userId },
       },
     });
 
@@ -44,14 +48,9 @@ export async function PUT(req) {
       );
     }
 
-    // 🔥 update user
     const updatedUser = await prisma.user.update({
       where: { id: decoded.userId },
-      data: {
-        name,
-        email,
-        phone,
-      },
+      data: { name, email, phone },
       select: {
         id: true,
         name: true,

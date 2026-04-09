@@ -1,7 +1,24 @@
+"use client";
 import Modal from "../ui/Modal";
+import { useRouter } from "next/navigation";
+import { getCurrentUser } from "@/services/auth";
+
 
 const ServiceModal = ({ item, onClose }) => {
+  const router = useRouter();
+
   if (!item) return null;
+
+
+  const handleOrder = () => {
+    const user = getCurrentUser();
+
+    if (!user) {
+      router.push("/login");
+    } else {
+      router.push("/order");
+    }
+  };
 
   return (
     <Modal isOpen={!!item} onClose={onClose}>
@@ -11,7 +28,7 @@ const ServiceModal = ({ item, onClose }) => {
         <img
           src={item.image}
           alt={item.name}
-          className="w-full h-80 object-cover"
+          className="w-full h-80 object-cover border-t rounded-t-2xl"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
@@ -38,7 +55,9 @@ const ServiceModal = ({ item, onClose }) => {
         </div>
 
         <div className="mt-8 flex gap-3">
-          <button className="flex-1 bg-black text-white py-3 rounded-xl font-semibold">
+          <button 
+          onClick={handleOrder}
+          className="flex-1 bg-black text-white py-3 rounded-xl font-semibold">
             Pesan Sekarang
           </button>
           <button

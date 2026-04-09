@@ -94,7 +94,7 @@ export default function RegisterPage() {
           {/* LOGO */}
           <div className="flex flex-col items-center mb-6">
             <div className="bg-white text-black p-3 rounded-full mb-3">
-              <Truck size={28} />
+              <img src="/truck.png" alt="Logo" className="w-6 h-6" />
             </div>
             <h1 className="text-2xl font-bold text-white">JaBarin</h1>
             <p className="text-gray-400 text-sm">

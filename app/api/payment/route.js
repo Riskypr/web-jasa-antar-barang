@@ -21,14 +21,14 @@ export async function POST(req) {
         },
         body: JSON.stringify({
           transaction_details: {
-            order_id: order_id, // ✅ PAKAI DARI DB
+            order_id: order_id, //  PAKAI DARI DB
             gross_amount: Math.floor(amount),
           },
           credit_card: {
             secure: true,
           },
 
-          // 🔥 INI YANG BIKIN GAK KE example.com
+    
           callbacks: {
             finish: "http://localhost:3000/order/success",
           },

@@ -32,7 +32,7 @@ const destinationIcon = new L.Icon({
   shadowUrl: null,
 });
 
-// 🔥 HANDLE CLICK (INI KUNCI FIX)
+//  HANDLE CLICK (INI KUNCI FIX)
 function ClickHandler({ markers, setMarkers, setPoints }) {
   useMapEvents({
     click(e) {

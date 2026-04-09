@@ -67,7 +67,7 @@ export default function ProfilePage() {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
+                    // Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(formData),
             });
@@ -112,7 +112,7 @@ export default function ProfilePage() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
+                    // Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     password: passwordData.password,
@@ -136,7 +136,7 @@ export default function ProfilePage() {
     if (loading) return <p className="text-center mt-20">Loading...</p>;
 
     return (
-        <main className="flex flex-col min-h-screen bg-gray-50">
+        <main className="flex flex-col min-h-screen bg-white">
 
             <Navbar />
 
@@ -145,7 +145,7 @@ export default function ProfilePage() {
                 <div className="max-w-5xl mx-auto space-y-6 py-10 px-4 mt-20">
 
                     {/* 🔥 HEADER */}
-                    <div className="bg-gray-200 p-6 rounded-xl flex items-center gap-4">
+                    <div className="bg-gray-100 p-6 rounded-xl flex items-center gap-4">
                         <div className="w-16 h-16 rounded-xl bg-gray-900 text-white flex items-center justify-center text-xl font-bold">
                             {user?.name?.charAt(0).toUpperCase()}
                         </div>
@@ -164,7 +164,7 @@ export default function ProfilePage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
 
                         {/* INFORMASI PRIBADI */}
-                        <div className="md:col-span-2 bg-white p-6 rounded-xl shadow">
+                        <div className="md:col-span-2 bg-white p-6 rounded-xl shadow border border-2-gray-400">
                             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 border-l-4 border-black pl-2">
                                 Informasi Pribadi
                             </h3>
@@ -219,7 +219,7 @@ export default function ProfilePage() {
                         </div>
 
                         {/* ACCOUNT */}
-                        <div className="md:col-span-1 bg-white p-6 rounded-xl shadow">
+                        <div className="md:col-span-1 bg-white p-6 rounded-xl shadow border border-2-gray-400">
                             <h3 className="text-lg font-semibold mb-4 border-l-4 border-black pl-2 flex items-center gap-2">
                                 Pengaturan Akun
                             </h3>
