@@ -20,7 +20,7 @@ export async function POST(req) {
       ?.split("=")[1];
 
     if (!token) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
     const decoded = verifyToken(token);

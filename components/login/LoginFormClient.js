@@ -41,7 +41,8 @@ export default function LoginFormClient() {
       if (!response.ok) throw new Error('Email atau password salah');
 
       const data = await response.json();
-      document.cookie = `token=${data.token}; path=/`;
+      // document.cookie = `token=${data.token}; path=/`;
+      document.cookie = `token=${data.token}; path=/; Secure; SameSite=None`;
       localStorage.setItem('user', JSON.stringify(data.user));
 
       window.dispatchEvent(new Event('userChanged'));
