@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { cookies } from 'next/headers';
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
@@ -12,13 +12,13 @@ export async function POST(req) {
     });
 
     if (!user) {
-      return Response.json({ error: "User tidak ditemukan" }, { status: 404 });
+      return NextResponse.json({ error: "User tidak ditemukan" }, { status: 404 });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return Response.json({ error: "Password salah" }, { status: 400 });
+      return NextResponse.json({ error: "Password salah" }, { status: 400 });
     }
 
     const token = jwt.sign(
@@ -27,21 +27,9 @@ export async function POST(req) {
       { expiresIn: "1d" }
     );
 
-    const cookieStore = await cookies();
-
-    cookieStore.set("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax", // Sesuaikan dengan kebutuhan aplikasi Anda (lax, strict, none)
-      path: "/",
-    });
-
-    console.log("SET TOKEN:", token);
-    console.log("COOKIES AFTER SET:", cookieStore.getAll());
-
-    return Response.json({
+    // 🔥 INI YANG BENAR
+    const response = NextResponse.json({
       message: "Login berhasil",
-      token,
       user: {
         id: user.id,
         name: user.name,
@@ -49,7 +37,18 @@ export async function POST(req) {
         phone: user.phone,
       },
     });
+
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+    });
+
+    return response;
+
   } catch (error) {
-    return Response.json({ error: "Terjadi kesalahan" }, { status: 500 });
+    console.error(error);
+    return NextResponse.json({ error: "Terjadi kesalahan" }, { status: 500 });
   }
 }
