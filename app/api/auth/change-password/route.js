@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs';
 import { verifyToken } from '@/lib/jwt';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req) {
   try {
     // 🔥 ambil token dari cookie
