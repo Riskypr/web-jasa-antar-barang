@@ -50,9 +50,9 @@ const handleOrder = () => {
                 Pesan Sekarang
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition" />
               </button>
-              <span className="ml-4 mt-2 text-sm text-gray-300 block">
+              {/* <span className="ml-4 mt-2 text-sm text-gray-300 block">
                 19 juta lapangan kerja di bidang logistik
-              </span>
+              </span> */}
             </div>
           </div>
 
