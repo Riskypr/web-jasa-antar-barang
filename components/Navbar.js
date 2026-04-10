@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Menu, X, User, Home, Package, Rocket, LogOut, History } from '@/components/icons';
 import { useRouter } from 'next/navigation';
-import { getCurrentUser } from '@/services/auth'; 
+import { getCurrentUser, logoutUser } from '@/services/auth'; 
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,13 +47,13 @@ export default function Navbar() {
   }, []);
 
   //  logout
-  const handleLogout = () => {
-    localStorage.clear();
-    setUser(null);
+  const handleLogout = async () => {
+    await logoutUser();
 
+    setUser(null);
     window.dispatchEvent(new Event("userChanged"));
 
-    router.push('/login');
+    router.push("/login");
   };
 
   //  helper close mobile

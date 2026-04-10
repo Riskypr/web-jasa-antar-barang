@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -9,6 +8,8 @@ import useOrder from "@/hooks/useOrder";
 import { createPayment } from "@/services/api";
 import { Truck, Car, Bike } from "@/components/icons";
 import { getCurrentUser } from "@/services/auth";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const MapPicker = dynamic(() => import("@/components/MapPicker"), {
   ssr: false,
@@ -27,7 +28,17 @@ export default function OrderPage() {
     destinationAddress,
   } = useOrder(points);
 
-  // 🚗 DATA ARMADA
+  const router = useRouter();
+
+  useEffect(() => {
+    const user = getCurrentUser();
+
+    if (!user) {
+      router.replace("/login"); 
+    }
+  }, []);
+
+  //  DATA ARMADA
   const vehicles = [
     {
       name: "Motor",
@@ -49,7 +60,7 @@ export default function OrderPage() {
     },
   ];
 
-  // 🧾 CREATE ORDER
+  //  CREATE ORDER
   async function createOrder(amount) {
     try {
 
@@ -65,7 +76,6 @@ export default function OrderPage() {
           distance,
           duration,
           price: amount,
-          // userId: user?.id,
         }),
       });
 
@@ -76,7 +86,7 @@ export default function OrderPage() {
     }
   }
 
-  // 💳 PAYMENT
+  //  PAYMENT
   async function pay() {
     if (!distance || !selectedVehicle) {
       alert("Lengkapi data terlebih dahulu!");
@@ -111,18 +121,6 @@ export default function OrderPage() {
       <Navbar />
 
       <div className="flex-1 px-4 lg:px-12 py-8 mt-20">
-
-        {/* 🔥 HEADER */}
-        {/* <div className="text-center max-w-xl mx-auto text-gray-800 mb-6">
-          <h1 className="text-2xl font-bold">
-            Pesan Pengiriman
-          </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Pilih lokasi & armada terbaik untuk pengirimanmu
-          </p>
-        </div> */}
-
-        {/* 🔥 MAIN GRID */}
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
 
           {/* 🗺️ MAP */}

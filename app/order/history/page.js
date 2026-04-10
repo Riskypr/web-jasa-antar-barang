@@ -17,13 +17,17 @@ export default function HistoryPage() {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-fetch("/api/order/history")
-  .then((res) => res.json())
-  .then((data) => {
-    console.log("HISTORY:", data); // 🔥 debug
-    setOrders(Array.isArray(data) ? data : []);
-  });
-     
+  fetch("/api/order/history")
+    .then(async (res) => {
+      if (res.status === 401) {
+        window.location.href = "/login";
+        return [];
+      }
+      return res.json();
+    })
+    .then((data) => {
+      setOrders(Array.isArray(data) ? data : []);
+      });
   }, []);
 
   //  ICON ARMADA

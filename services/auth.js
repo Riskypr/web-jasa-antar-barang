@@ -24,17 +24,15 @@ export const getCurrentUser = () => {
   return null;
 };
 
-// ❌ HAPUS INI (sudah tidak dipakai)
-// export const getToken = () => {}
-// export const isTokenValid = () => {}
-
-
-export const logoutUser = () => {
+// logout (hapus token dan user)
+export const logoutUser = async () => {
   if (typeof window !== "undefined") {
-    localStorage.removeItem("user");
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
 
-    // 🔥 hapus cookie token juga
-    document.cookie = "token=; Max-Age=0; path=/";
+    localStorage.removeItem("user");
   }
 };
 
