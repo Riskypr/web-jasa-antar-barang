@@ -30,7 +30,7 @@ export async function POST(req) {
 
     
           callbacks: {
-            finish: "http://localhost:3000/order/success",
+            finish: "https://web-jasa-antar-barang.vercel.app/order/success",
           },
         }),
       }
