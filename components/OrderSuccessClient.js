@@ -12,7 +12,7 @@ export default function OrderSuccessClient() {
   const orderId = params.get('order_id');
   const status = params.get('transaction_status');
 
-  // 🔥 Cek login di client (opsional tapi bagus untuk UX)
+  //  Cek login di client (opsional tapi bagus untuk UX)
   useEffect(() => {
     const hasToken = document.cookie.includes('token=');
 
@@ -53,7 +53,7 @@ export default function OrderSuccessClient() {
           {/* BUTTON */}
           <div className="mt-6 space-y-3">
 
-            {/* 🔥 HISTORY */}
+            {/* HISTORY */}
             <button
               onClick={() => router.push('/history')}
               className="w-full flex items-center justify-center gap-2 bg-black text-white font-semibold py-2 rounded-lg hover:bg-gray-800 transition"
@@ -62,7 +62,7 @@ export default function OrderSuccessClient() {
               Lihat Riwayat Pesanan
             </button>
 
-            {/* 🔥 BERANDA */}
+            {/* BERANDA */}
             <button
               onClick={() => router.push('/')}
               className="w-full border border-black text-black py-2 rounded-lg hover:bg-gray-100 transition"

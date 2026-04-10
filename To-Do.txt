@@ -1,7 +1,7 @@
 todo list fitur jasa-antar-barang
     1. Tambah notifikasi untuk berhasil register & login ✅
-    2. Tambah notifikasi untuk pembayaran berhasil & gagal 
+    2. Tambah notifikasi untuk pembayaran berhasil & gagal ✅
     3. Tambah page profil ✅
-    4. Tambah tampilan seletah order jasa
+    4. Tambah icon untuk order di navbar
     5. Tambah dashboard admin CRUD + login & notifikasi
     6. Coming soon!

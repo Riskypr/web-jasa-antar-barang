@@ -30,7 +30,7 @@ export async function POST(req) {
 
     
           callbacks: {
-            finish: "http://localhost:3000/order/success",
+            finish: `${process.env.NEXT_PUBLIC_BASE_URL}/order/success`,
           },
         }),
       }
