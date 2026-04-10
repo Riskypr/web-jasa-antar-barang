@@ -13,13 +13,13 @@ export default function OrderSuccessClient() {
   const status = params.get('transaction_status');
 
   //  Cek login di client (opsional tapi bagus untuk UX)
-  useEffect(() => {
-    const hasToken = document.cookie.includes('token=');
+  // useEffect(() => {
+  //   const hasToken = document.cookie.includes('token=');
 
-    if (!hasToken) {
-      router.push('/login');
-    }
-  }, [router]);
+  //   if (!hasToken) {
+  //     router.push('/login');
+  //   }
+  // }, [router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-200 relative overflow-hidden px-4">

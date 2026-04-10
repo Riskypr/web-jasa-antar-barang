@@ -21,7 +21,7 @@ export async function POST(req) {
         },
         body: JSON.stringify({
           transaction_details: {
-            order_id: order_id, //  PAKAI DARI DB
+            order_id: order_id, //  Pastikan order_id unik untuk setiap transaksi
             gross_amount: Math.floor(amount),
           },
           credit_card: {
