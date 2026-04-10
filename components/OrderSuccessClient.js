@@ -55,7 +55,7 @@ export default function OrderSuccessClient() {
 
             {/* HISTORY */}
             <button
-              onClick={() => router.push('/history')}
+              onClick={() => router.push('/order/history')}
               className="w-full flex items-center justify-center gap-2 bg-black text-white font-semibold py-2 rounded-lg hover:bg-gray-800 transition"
             >
               <Package size={18} />
