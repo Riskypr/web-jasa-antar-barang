@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import OrderCard from "@/components/OrderCard";
+import OrderCard from "@/components/order/OrderCard";
 import useOrder from "@/hooks/useOrder";
 import { createPayment } from "@/services/api";
 import { Truck, Car, Bike } from "@/components/icons";

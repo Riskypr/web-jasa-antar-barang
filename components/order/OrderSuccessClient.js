@@ -12,15 +12,6 @@ export default function OrderSuccessClient() {
   const orderId = params.get('order_id');
   const status = params.get('transaction_status');
 
-  //  Cek login di client (opsional tapi bagus untuk UX)
-  // useEffect(() => {
-  //   const hasToken = document.cookie.includes('token=');
-
-  //   if (!hasToken) {
-  //     router.push('/login');
-  //   }
-  // }, [router]);
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-200 relative overflow-hidden px-4">
       <div className="relative w-full max-w-md">
