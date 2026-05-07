@@ -38,17 +38,21 @@ import {
   History,
   CircleX,
   Printer,
+  ChevronDown,
+  MoveUpRight,
   Clock3
 
 } from "lucide-react";
 
 export {
   Package,
+  MoveUpRight,
   AlertTriangle,
   ArrowRight,
   Printer,
   MapPin,
   DollarSign,
+  ChevronDown,
   Clock,
   ShieldCheck,
   HandCoins,
