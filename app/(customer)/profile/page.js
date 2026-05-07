@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react';
 import { User } from '@/components/icons';
 import { useToast } from '@/hooks/useToast';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { getCurrentUser } from "@/services/auth";
 import { useRouter } from "next/navigation";
 import { Save } from '@/components/icons';
@@ -138,8 +136,6 @@ export default function ProfilePage() {
     return (
         <main className="flex flex-col min-h-screen bg-white">
 
-            <Navbar />
-
             {/* 🔥 CONTENT */}
             <div className="flex-1 w-full">
                 <div className="max-w-5xl mx-auto space-y-6 py-10 px-4 mt-20">
@@ -262,9 +258,6 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
-
-            {/* 🔥 FOOTER */}
-            <Footer />
 
         </main>
     );
