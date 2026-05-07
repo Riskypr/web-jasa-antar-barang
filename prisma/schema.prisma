@@ -37,6 +37,8 @@ model Order {
   transaction_id      String?
   snap_token          String?
 
+   fraud_status        String?
+
   order_status        String   @default("menunggu")
 
   created_at          DateTime @default(now())

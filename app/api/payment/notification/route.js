@@ -4,12 +4,17 @@ import { getPaymentState } from "@/lib/paymentStatus";
 
 export async function POST(req) {
   try {
+    // console.log("WEBHOOK HIT");
+
     const body = await req.json();
 
-    console.log("MIDTRANS BODY:", body);
+    // console.log("BODY:", body);
+
     const orderId = body.order_id;
 
-    // VALIDATE SIGNATURE
+    // console.log("ORDER ID:", orderId);
+
+    // SIGNATURE VALIDATION
     const signatureKey = crypto
       .createHash("sha512")
       .update(
@@ -20,30 +25,47 @@ export async function POST(req) {
       )
       .digest("hex");
 
+    console.log("LOCAL SIGN:", signatureKey);
+    console.log("MIDTRANS SIGN:", body.signature_key);
+
     if (signatureKey !== body.signature_key) {
+      console.log("INVALID SIGNATURE");
+
+      return Response.json(
+        { error: "Invalid signature" },
+        { status: 403 }
+      );
+    }
+
+    const existingOrder = await prisma.order.findUnique({
+      where: {
+        id: orderId,
+      },
+    });
+
+    // console.log("FOUND ORDER:", existingOrder);
+
+    if (!existingOrder) {
       return Response.json(
         {
-          error: "Invalid signature",
+          error: "Order not found",
         },
         {
-          status: 403,
+          status: 404,
         }
       );
     }
 
-    // PAYMENT STATUS MAPPING
     const statusData = getPaymentState(
       body.transaction_status
     );
 
-    // PAYMENT METHOD DETECTION
     const paymentMethod =
       body.va_numbers?.[0]?.bank ||
       body.payment_type ||
       "unknown";
 
-    // UPDATE ORDER
-    await prisma.order.update({
+    const updatedOrder = await prisma.order.update({
       where: {
         id: orderId,
       },
@@ -54,20 +76,19 @@ export async function POST(req) {
 
         payment_method: paymentMethod,
         payment_type: body.payment_type,
-
         transaction_id: body.transaction_id,
-
-        // OPTIONAL EXTRA DATA
         fraud_status: body.fraud_status || null,
       },
     });
+
+    // console.log("UPDATED ORDER:", updatedOrder);
 
     return Response.json({
       success: true,
     });
 
   } catch (err) {
-    console.error("MIDTRANS WEBHOOK ERROR:", err);
+    // console.error("WEBHOOK ERROR:", err);
 
     return Response.json(
       {
