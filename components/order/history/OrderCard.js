@@ -1,9 +1,11 @@
+"use client";
+
 import { motion } from "framer-motion";
 import { MapPin, Navigation } from "@/components/icons";
 import { VEHICLE_CONFIG, STATUS_STYLE, formatTime } from "@/utils/history";
 
 export const OrderCard = ({ order, onClick }) => {
-  const { icon: Icon, bg } = VEHICLE_CONFIG[order.vehicle] || VEHICLE_CONFIG.Motor;
+  const { icon: Icon, bg } = VEHICLE_CONFIG[order.vehicle] || VEHICLE_CONFIG.Truck;
   const statusClass = STATUS_STYLE[order.payment_status] || STATUS_STYLE.default;
   
 

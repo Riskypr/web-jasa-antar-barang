@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 import {
   X,
@@ -23,7 +24,7 @@ export default function OrderDetailModal({
 }) {
   const { icon: Icon } =
     VEHICLE_CONFIG[order.vehicle] ||
-    VEHICLE_CONFIG.Motor;
+    VEHICLE_CONFIG.Truck;
 
   const statusClass =
     STATUS_STYLE[order.payment_status] ||
@@ -205,18 +206,18 @@ export default function OrderDetailModal({
           )}
           
           {order.payment_status === "paid" && (
-            <button
-            onClick={() =>
-                window.open(`/invoice/${order.id}`, "_blank")
-            }
-            className="
+           <Link
+              href={`/invoice/${order.id}`}
+              // target="_blank"
+              className="
                 w-full border border-gray-900
                 text-gray-900 py-4 rounded-2xl
                 font-bold hover:bg-gray-100 transition
-            "
+                flex items-center justify-center
+              "
             >
-            Cetak Bukti Pembayaran
-            </button>
+              Cetak Bukti Pembayaran
+            </Link>
         )}
         </div>
       </motion.div>

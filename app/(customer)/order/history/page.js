@@ -59,7 +59,7 @@ export default function HistoryPage() {
   return (
     <>
       <main className="min-h-screen bg-[#F9FAFB]">
-        <div className="flex-1 px-4 lg:w-[950px] mx-auto mt-32 space-y-10 pb-20">
+        <div className="flex-1 px-4 lg:w-[950px] mx-auto pt-32 space-y-10 pb-20">
           
           <Header
             filterDate={filterDate}
@@ -124,7 +124,7 @@ const Header = ({
   dateInputRef,
 }) => {
   return (
-    <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-md flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+    <div className="bg-white p-8 rounded-3xl border border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
       
       <div className="space-y-1.5">
         <h1 className="text-3xl font-bold tracking-tighter text-gray-900">

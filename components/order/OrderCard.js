@@ -124,7 +124,7 @@ export default function OrderCard({
       {/* STATUS ORDER */}
       {paymentStatus === "PAID" && (
         <div className="mb-3 p-3 rounded-xl bg-blue-50 text-blue-600 text-xs border">
-          Pesanan sedang diproses 🚚
+          Pesanan sedang diproses 
         </div>
       )}
 
