@@ -4,8 +4,7 @@ import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Footer from "@/components/layout/Footer";
-import Navbar from "@/components/layout/Navbar";
+
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -29,9 +28,7 @@ export default function RootLayout({
       className={`${poppins.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-poppins">
-        <Navbar />
         {children}
-        <Footer />
         <ToastContainer 
           position="top-right"
           autoClose={3000}

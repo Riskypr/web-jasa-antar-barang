@@ -136,11 +136,11 @@ export default function ProfilePage() {
     return (
         <main className="flex flex-col min-h-screen bg-white">
 
-            {/* 🔥 CONTENT */}
+         
             <div className="flex-1 w-full">
                 <div className="max-w-5xl mx-auto space-y-6 py-10 px-4 mt-20">
 
-                    {/* 🔥 HEADER */}
+                   
                     <div className="bg-gray-100 p-6 rounded-xl flex items-center gap-4">
                         <div className="w-16 h-16 rounded-xl bg-gray-900 text-white flex items-center justify-center text-xl font-bold">
                             {user?.name?.charAt(0).toUpperCase()}
@@ -156,7 +156,7 @@ export default function ProfilePage() {
                         </div>
                     </div>
 
-                    {/* 🔥 GRID */}
+                    
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
 
                         {/* INFORMASI PRIBADI */}

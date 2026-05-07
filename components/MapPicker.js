@@ -32,7 +32,6 @@ const destinationIcon = new L.Icon({
   shadowUrl: null,
 });
 
-//  HANDLE CLICK (INI KUNCI FIX)
 function ClickHandler({ markers, setMarkers, setPoints }) {
   useMapEvents({
     click(e) {
@@ -79,7 +78,7 @@ export default function MapPicker({ setPoints }) {
   const [markers, setMarkers] = useState([]);
 
   return (
-    <div className="relative">
+    <div className="relative z-10">
       <MapContainer
         center={[-3.3, 114.6]}
         zoom={13}
