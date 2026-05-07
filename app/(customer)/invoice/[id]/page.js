@@ -56,7 +56,7 @@ export default async function InvoicePage({ params }) {
       `}} />
 
       <main className="min-h-screen bg-[#EEF2F7] py-10 px-4 print:bg-white print:py-0 print:px-0">
-        <div className="max-w-4xl mx-auto mt-24 print:mt-0 print:max-w-none">
+        <div className="max-w-4xl mx-auto mt-[54px] print:mt-0 print:max-w-none">
 
           <div className="print:hidden mb-6">
             <InvoiceActions />
