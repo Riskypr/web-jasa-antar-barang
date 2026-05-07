@@ -1,6 +1,8 @@
 import {
   Package,
   ArrowRight,
+  ArrowLeft,
+  AlertTriangle,
   MapPin,
   DollarSign,
   Clock,
@@ -26,26 +28,37 @@ import {
   EyeOff,
   Bike,
   Calendar,
+  Info,
   Search,
   Car,
   Navigation,
   CreditCard,
-  History
+  LoaderCircle,
+  History,
+  CircleX,
+  Printer,
+  Clock3
 
 } from "lucide-react";
 
 export {
   Package,
+  AlertTriangle,
   ArrowRight,
+  Printer,
   MapPin,
   DollarSign,
   Clock,
   ShieldCheck,
   HandCoins,
   Calendar,
+  LoaderCircle,
   Search,
   Truck,
   Home,
+  ArrowLeft,
+  CircleX,
+  Info,
   Utensils,
   Music,
   Menu,
@@ -66,7 +79,8 @@ export {
   Car,
   Navigation,
   CreditCard,
-  History
+  History,
+  Clock3
 
 
 };

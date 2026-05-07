@@ -1,8 +1,6 @@
 "use client";
 
-import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import Footer from "@/components/Footer";
 import Features from "@/components/Features";
 import Services from "@/components/Services";
 

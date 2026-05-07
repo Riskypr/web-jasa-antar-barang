@@ -2,13 +2,16 @@ import { motion } from "framer-motion";
 import { MapPin, Navigation } from "@/components/icons";
 import { VEHICLE_CONFIG, STATUS_STYLE, formatTime } from "@/utils/history";
 
-export const OrderCard = ({ order }) => {
+export const OrderCard = ({ order, onClick }) => {
   const { icon: Icon, bg } = VEHICLE_CONFIG[order.vehicle] || VEHICLE_CONFIG.Motor;
   const statusClass = STATUS_STYLE[order.payment_status] || STATUS_STYLE.default;
+  
 
   return (
-    <motion.div layout whileHover={{ y: -8 }} className="relative overflow-hidden rounded-3xl border border-gray-100 shadow-sm bg-white flex flex-col group cursor-pointer">
-      <div className="absolute top-0 left-0 w-full h-48 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
+    <motion.div layout whileHover={{ y: -8 }} 
+     onClick={onClick}
+    className="relative overflow-hidden rounded-3xl border border-gray-100 shadow-sm bg-white flex flex-col group cursor-pointer">
+      <div className="absolute top-0 left-0 w-full h-48 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110 opacity-50"
            style={{ backgroundImage: `url('${bg}')`, WebkitMaskImage: "linear-gradient(to bottom, black 20%, transparent 100%)" }} />
       
       <div className="relative z-10 p-7 flex flex-col h-full">
@@ -19,7 +22,7 @@ export const OrderCard = ({ order }) => {
             </div>
             <div>
               <p className="font-bold text-xl capitalize">{order.vehicle}</p>
-              <p className="text-[10px] text-white font-medium">{formatTime(order.created_at)} WIB</p>
+              <p className="text-[10px] text-gray-700 font-medium">{formatTime(order.created_at)} WIB</p>
             </div>
           </div>
           <div className={`text-[10px] font-bold capitalize px-4 py-1 rounded-full tracking-widest ${statusClass}`}>

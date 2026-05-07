@@ -60,7 +60,7 @@ export default function Navbar() {
   const closeMobile = () => setIsOpen(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[9999] bg-white shadow px-6 py-4 flex justify-between items-center">
+    <nav className="fixed top-0 left-0 right-0 z-40 bg-white shadow px-6 py-4 flex justify-between items-center">
 
       {/* LOGO */}
       <div className="flex items-center gap-3">

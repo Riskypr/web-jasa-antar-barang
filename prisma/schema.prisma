@@ -21,16 +21,26 @@ model User {
 
 model Order {
   id                  String   @id @default(uuid())
-  userId              String   
+  userId              String
   vehicle             String
+
   pickup_address      String
   destination_address String
+
   distance            Float
   duration            Float
   price               Int
+
   payment_status      String   @default("pending")
+  payment_method      String?
+  payment_type        String?
+  transaction_id      String?
+  snap_token          String?
+
   order_status        String   @default("menunggu")
+
   created_at          DateTime @default(now())
+  updated_at          DateTime @default(now()) @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

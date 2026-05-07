@@ -22,3 +22,14 @@ section {
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-in-out;
 }
+
+@media print {
+  body {
+    background: white !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 16mm;
+  }
+}

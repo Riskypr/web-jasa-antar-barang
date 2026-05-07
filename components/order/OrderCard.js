@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Clock, Navigation, CreditCard } from "@/components/icons";
+import { MapPin, Clock, Navigation } from "@/components/icons";
 
 export default function OrderCard({
   distance,
@@ -29,7 +29,6 @@ export default function OrderCard({
   return (
     <div className="bg-white rounded-2xl p-5 ">
 
-      {/* 🔥 HEADER */}
       <div className="flex items-center justify-between mb-5">
         <div>
           <h3 className="font-semibold text-lg text-gray-800">
@@ -48,7 +47,6 @@ export default function OrderCard({
         </div>
       </div>
 
-      {/* 📍 LOKASI */}
       <div className="space-y-4 text-sm mb-5">
 
         {/* PICKUP */}
@@ -79,7 +77,7 @@ export default function OrderCard({
 
       </div>
 
-      {/* 📊 INFO */}
+      {/* INFO */}
       <div className="grid grid-cols-2 gap-3 text-sm mb-5">
 
         <div className="bg-gray-50 p-3 rounded-xl flex items-center gap-2">
@@ -104,11 +102,11 @@ export default function OrderCard({
 
       </div>
 
-      {/* 💰 HARGA */}
+      {/*  HARGA */}
       <div className="mb-4 border-t pt-4">
         <div className="flex justify-between items-center">
           <p className="text-gray-500 text-sm">
-            Total Pembayaran
+            Estimasi Pembayaran
           </p>
           <h2 className="text-xl font-bold text-gray-900">
             {distance ? `Rp ${harga.toLocaleString()}` : "..."}
@@ -116,28 +114,27 @@ export default function OrderCard({
         </div>
       </div>
 
-      {/* 💳 STATUS */}
+      {/* STATUS */}
       {paymentStatus && (
         <div className="mb-3 p-3 rounded-xl bg-green-50 text-green-600 text-xs border">
           Pembayaran: {paymentStatus}
         </div>
       )}
 
-      {/* 🚚 STATUS ORDER */}
+      {/* STATUS ORDER */}
       {paymentStatus === "PAID" && (
         <div className="mb-3 p-3 rounded-xl bg-blue-50 text-blue-600 text-xs border">
           Pesanan sedang diproses 🚚
         </div>
       )}
 
-      {/* 🔥 BUTTON */}
+      {/* BUTTON */}
       <button
         onClick={onPay}
-        disabled={!distance || paymentStatus === "PAID"}
         className="w-full mt-3 flex items-center justify-center gap-2 bg-gray-900 text-white font-semibold py-3 rounded-xl hover:opacity-90 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
       >
-        <CreditCard size={18} />
-        {paymentStatus === "PAID" ? "Selesai" : "Bayar Sekarang"}
+        
+        Pesan Sekarang
       </button>
     </div>
   );
