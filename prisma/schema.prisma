@@ -8,15 +8,31 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum UserRole {
+  CUSTOMER
+  DRIVER
+  ADMIN
+}
+
 model User {
   id        String   @id @default(uuid())
   name      String?
   email     String   @unique
   phone     String
   password  String
+
+  role      UserRole @default(CUSTOMER)
+
   createdAt DateTime @default(now())
 
   orders    Order[]  
+  activityLogs ActivityLog[]
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  failed
 }
 
 model Order {
@@ -31,7 +47,7 @@ model Order {
   duration            Float
   price               Int
 
-  payment_status      String   @default("pending")
+  payment_status      PaymentStatus   @default(pending)
   payment_method      String?
   payment_type        String?
   transaction_id      String?
@@ -45,4 +61,16 @@ model Order {
   updated_at          DateTime @default(now()) @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String
+  action    String   // Contoh: "LOGIN", "LOGOUT", "DELETE_USER", "UPDATE_ORDER"
+  details   String?  // Info tambahan (misal: "Menghapus user ID: xxx")
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

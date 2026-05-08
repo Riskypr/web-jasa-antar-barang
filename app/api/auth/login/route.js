@@ -22,12 +22,19 @@ export async function POST(req) {
     }
 
     const token = jwt.sign(
-      { userId: user.id },
+
+      { 
+        userId: user.id,
+         role: user.role, 
+      },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { 
+        expiresIn: "1d" 
+      }
     );
 
-    // 🔥 INI YANG BENAR
+    // console.log("Generated JWT:", user.role, user.id, token);
+
     const response = NextResponse.json({
       message: "Login berhasil",
       user: {
@@ -35,8 +42,11 @@ export async function POST(req) {
         name: user.name,
         email: user.email,
         phone: user.phone,
+        role: user.role,
       },
     });
+
+    
 
     response.cookies.set("token", token, {
       httpOnly: true,
