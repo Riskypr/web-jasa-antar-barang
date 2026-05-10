@@ -3,10 +3,14 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
+//////////////////////////////////////////////////////
+// ENUMS
+//////////////////////////////////////////////////////
 
 enum UserRole {
   CUSTOMER
@@ -14,63 +18,267 @@ enum UserRole {
   ADMIN
 }
 
-model User {
-  id        String   @id @default(uuid())
-  name      String?
-  email     String   @unique
-  phone     String
-  password  String
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  INACTIVE
+}
 
-  role      UserRole @default(CUSTOMER)
+enum VehicleType {
+  MOTOR
+  MOBIL
+  TRUCK
+}
 
-  createdAt DateTime @default(now())
-
-  orders    Order[]  
-  activityLogs ActivityLog[]
+enum OrderStatus {
+  PENDING
+  PROCESS
+  PICKUP
+  DELIVERY
+  COMPLETED
+  CANCELLED
 }
 
 enum PaymentStatus {
-  pending
-  paid
-  failed
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
 }
+
+//////////////////////////////////////////////////////
+// USER
+//////////////////////////////////////////////////////
+
+model User {
+  id            String       @id @default(uuid())
+
+  name          String
+  email         String       @unique
+  phone         String       @unique
+  password      String
+
+  avatar        String?
+
+  role          UserRole     @default(CUSTOMER)
+  status        UserStatus   @default(ACTIVE)
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime    @default(now()) @updatedAt
+
+  //////////////////////////////////////////////////
+  // RELATIONS
+  //////////////////////////////////////////////////
+
+  customerOrders Order[]      @relation("CustomerOrders")
+
+  driverOrders   Order[]      @relation("DriverOrders")
+
+  activityLogs   ActivityLog[]
+
+  driverProfile  DriverProfile?
+
+  @@index([role])
+  @@index([status])
+}
+
+//////////////////////////////////////////////////////
+// DRIVER PROFILE
+//////////////////////////////////////////////////////
+
+model DriverProfile {
+  id              String        @id @default(uuid())
+
+  userId          String        @unique
+
+  vehicleType     VehicleType
+
+  licenseNumber   String?
+  identityNumber  String?
+
+  isOnline        Boolean       @default(false)
+  isVerified      Boolean       @default(false)
+
+  totalDeliveries Int           @default(0)
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  //////////////////////////////////////////////////
+  // RELATIONS
+  //////////////////////////////////////////////////
+
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleType])
+}
+
+//////////////////////////////////////////////////////
+// VEHICLES
+//////////////////////////////////////////////////////
+
+model Vehicle {
+  id            String        @id @default(uuid())
+
+  name          String
+
+  type          VehicleType
+
+  description   String?
+
+  icon          String?
+
+  basePrice     Int
+  pricePerKm    Int
+
+  maxWeight     Float?
+
+  isActive      Boolean       @default(true)
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  //////////////////////////////////////////////////
+  // RELATIONS
+  //////////////////////////////////////////////////
+
+  orders        Order[]
+
+  @@index([type])
+  @@index([isActive])
+}
+
+//////////////////////////////////////////////////////
+// ORDER
+//////////////////////////////////////////////////////
 
 model Order {
-  id                  String   @id @default(uuid())
-  userId              String
-  vehicle             String
+  id                    String          @id @default(uuid())
 
-  pickup_address      String
-  destination_address String
+  customerId            String
+  driverId              String?
 
-  distance            Float
-  duration            Float
-  price               Int
+  vehicleId             String
 
-  payment_status      PaymentStatus   @default(pending)
-  payment_method      String?
-  payment_type        String?
-  transaction_id      String?
-  snap_token          String?
+  //////////////////////////////////////////////////
+  // ADDRESS
+  //////////////////////////////////////////////////
 
-   fraud_status        String?
+  pickupAddress         String
+  destinationAddress    String
 
-  order_status        String   @default("menunggu")
+  //////////////////////////////////////////////////
+  // DELIVERY DETAIL
+  //////////////////////////////////////////////////
 
-  created_at          DateTime @default(now())
-  updated_at          DateTime @default(now()) @updatedAt
+  distance              Float
+  duration              Float
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemWeight            Float?
+
+  notes                 String?
+
+  //////////////////////////////////////////////////
+  // PRICE
+  //////////////////////////////////////////////////
+
+  basePrice             Int
+  distancePrice         Int
+
+  totalPrice            Int
+
+  //////////////////////////////////////////////////
+  // STATUS
+  //////////////////////////////////////////////////
+
+  status                OrderStatus     @default(PENDING)
+
+  //////////////////////////////////////////////////
+  // TIMESTAMP
+  //////////////////////////////////////////////////
+
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  //////////////////////////////////////////////////
+  // RELATIONS
+  //////////////////////////////////////////////////
+
+  customer              User            @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: Cascade)
+
+  driver                User?           @relation("DriverOrders", fields: [driverId], references: [id])
+
+  vehicle               Vehicle         @relation(fields: [vehicleId], references: [id])
+
+  payment               Payment?
+
+  @@index([customerId])
+  @@index([driverId])
+  @@index([vehicleId])
+  @@index([status])
 }
 
+//////////////////////////////////////////////////////
+// PAYMENT
+//////////////////////////////////////////////////////
+
+model Payment {
+  id                String          @id @default(uuid())
+
+  orderId           String          @unique
+
+  paymentMethod     String?
+  paymentType       String?
+
+  transactionId     String?         @unique
+
+  snapToken         String?
+
+  fraudStatus       String?
+
+  status            PaymentStatus   @default(PENDING)
+
+  paidAt            DateTime?
+
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  //////////////////////////////////////////////////
+  // RELATIONS
+  //////////////////////////////////////////////////
+
+  order             Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+}
+
+//////////////////////////////////////////////////////
+// ACTIVITY LOG
+//////////////////////////////////////////////////////
 
 model ActivityLog {
-  id        String   @id @default(uuid())
-  userId    String
-  action    String   // Contoh: "LOGIN", "LOGOUT", "DELETE_USER", "UPDATE_ORDER"
-  details   String?  // Info tambahan (misal: "Menghapus user ID: xxx")
-  ipAddress String?
-  createdAt DateTime @default(now())
+  id            String      @id @default(uuid())
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String?
+
+  action        String
+
+  entityType    String?
+  entityId      String?
+
+  details       String?
+
+  ipAddress     String?
+
+  createdAt     DateTime    @default(now())
+
+  //////////////////////////////////////////////////
+  // RELATIONS
+  //////////////////////////////////////////////////
+
+  user          User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
 }

@@ -15,16 +15,26 @@ export default async function AdminDashboard() {
 
   const orders = await prisma.order.findMany({
     where: {
-      payment_status: "paid",
-      created_at: {
+      payment: {
+        status: "PAID",
+      },
+
+      createdAt: {
         gte: new Date(`${currentYear}-01-01`),
         lte: new Date(`${currentYear}-12-31`),
       },
     },
 
     select: {
-      vehicle: true,
-      created_at: true,
+      createdAt: true,
+
+      vehicle: {
+        select: {
+          name: true,
+          type: true,
+          pricePerKm: true,
+        },
+      },
     },
   });
 
@@ -48,23 +58,25 @@ export default async function AdminDashboard() {
 
     prisma.order.count({
       where: {
-        order_status: "selesai",
+        status: "COMPLETED",
       },
     }),
 
     prisma.order.aggregate({
       where: {
-        payment_status: "paid",
+        payment: {
+          status: "PAID",
+        },
       },
 
       _sum: {
-        price: true,
+        totalPrice: true,
       },
     }),
   ]);
 
   const recentLogs =
-    await prisma.ActivityLog.findMany({
+    await prisma.activityLog.findMany({
       take: 6,
 
       orderBy: {
@@ -89,11 +101,12 @@ export default async function AdminDashboard() {
 
   const chartData = months.map(
     (month, index) => {
+
       const monthlyOrders =
         orders.filter(
           (o) =>
             new Date(
-              o.created_at
+              o.createdAt
             ).getMonth() === index
         );
 
@@ -102,23 +115,17 @@ export default async function AdminDashboard() {
 
         Motor: monthlyOrders.filter(
           (o) =>
-            o.vehicle
-              .trim()
-              .toLowerCase() === "motor"
+            o.vehicle?.type === "MOTOR"
         ).length,
 
         Mobil: monthlyOrders.filter(
           (o) =>
-            o.vehicle
-              .trim()
-              .toLowerCase() === "mobil"
+            o.vehicle?.type === "MOBIL"
         ).length,
 
         Truck: monthlyOrders.filter(
           (o) =>
-            o.vehicle
-              .trim()
-              .toLowerCase() === "truk"
+            o.vehicle?.type === "TRUCK"
         ).length,
       };
     }
@@ -209,7 +216,7 @@ export default async function AdminDashboard() {
               >
                 Rp{" "}
                 {(
-                  revenueData._sum.price || 0
+                  revenueData._sum.totalPrice || 0
                 ).toLocaleString("id-ID")}
               </h2>
 
@@ -260,7 +267,7 @@ export default async function AdminDashboard() {
         <StatsCard
           title="Pemasukan"
           value={`Rp ${(
-            revenueData._sum.price || 0
+            revenueData._sum.totalPrice || 0
           ).toLocaleString("id-ID")}`}
           icon="dollar"
           subtitle="Revenue keseluruhan"

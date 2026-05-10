@@ -24,14 +24,14 @@ export default async function AdminUsersPage() {
     include: {
       _count: {
         select: {
-          orders: true,
+          customerOrders: true,
         },
       },
     },
   });
 
   const totalOrders = users.reduce(
-    (acc, user) => acc + user._count.orders,
+    (acc, user) => acc + user._count.customerOrders,
     0
   );
 
@@ -48,7 +48,7 @@ export default async function AdminUsersPage() {
           {/* LEFT */}
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white text-[11px] font-bold tracking-[0.2em] uppercase mb-6">
-              <Sparkles size={14} />
+              <Users size={14} />
               Customer Management
             </div>
 
@@ -119,7 +119,9 @@ export default async function AdminUsersPage() {
               </div>
 
               <h2 className="text-3xl font-black tracking-tight">
-                {users.filter((u) => u._count.orders > 0).length}
+                {users.filter(
+                  (u) => u._count.customerOrders > 0
+                ).length}
               </h2>
 
               <p className="text-sm text-gray-400 mt-1">

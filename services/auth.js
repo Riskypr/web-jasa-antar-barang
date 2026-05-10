@@ -1,5 +1,5 @@
 
-// Check login (pakai user saja)
+// services/auth.js
 export const isUserLoggedIn = () => {
   if (typeof window !== "undefined") {
     return !!localStorage.getItem("user");

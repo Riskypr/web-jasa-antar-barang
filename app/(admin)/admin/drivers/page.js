@@ -1,7 +1,6 @@
 export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/prisma";
-
 import DriverTable from "@/components/admin/tables/DriverTable";
 
 import {
@@ -24,9 +23,11 @@ export default async function AdminDriversPage() {
     },
 
     include: {
+      driverProfile: true,
+
       _count: {
         select: {
-          orders: true,
+          driverOrders: true,
         },
       },
     },
@@ -47,7 +48,7 @@ export default async function AdminDriversPage() {
     mobilCount;
 
   return (
-    <div className="space-y-8">
+    <div>
       {/* HERO */}
       <div
         className="
@@ -56,7 +57,7 @@ export default async function AdminDriversPage() {
           border border-black/5
           bg-white
           p-8 md:p-10
-          shadow-sm
+          shadow-sm mb-8
         "
       >
         {/* BG */}
@@ -79,7 +80,7 @@ export default async function AdminDriversPage() {
                 mb-6
               "
             >
-              <Sparkles size={14} />
+              <Truck size={14} />
               Driver Management
             </div>
 
@@ -104,7 +105,7 @@ export default async function AdminDriversPage() {
           </div>
 
           {/* STATS */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full xl:w-auto">
+          <div className="grid grid-cols-2 md:grid-cols-2 gap-4 w-full xl:w-auto">
             {/* TOTAL */}
             <div
               className="
@@ -166,72 +167,6 @@ export default async function AdminDriversPage() {
 
               <p className="text-sm text-gray-400 mt-1">
                 Driver Aktif
-              </p>
-            </div>
-
-            {/* MOTOR */}
-            <div
-              className="
-                bg-zinc-50 border border-black/5
-                rounded-3xl p-5 min-w-[170px]
-              "
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div
-                  className="
-                    w-12 h-12 rounded-2xl
-                    bg-amber-100
-                    text-amber-600
-                    flex items-center justify-center
-                  "
-                >
-                  <Bike size={20} />
-                </div>
-
-                <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400">
-                  Motor
-                </span>
-              </div>
-
-              <h2 className="text-3xl font-black">
-                {motorCount}
-              </h2>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Armada Motor
-              </p>
-            </div>
-
-            {/* MOBIL */}
-            <div
-              className="
-                bg-zinc-50 border border-black/5
-                rounded-3xl p-5 min-w-[170px]
-              "
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div
-                  className="
-                    w-12 h-12 rounded-2xl
-                    bg-sky-100
-                    text-sky-600
-                    flex items-center justify-center
-                  "
-                >
-                  <Car size={20} />
-                </div>
-
-                <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400">
-                  Mobil
-                </span>
-              </div>
-
-              <h2 className="text-3xl font-black">
-                {mobilCount}
-              </h2>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Armada Mobil
               </p>
             </div>
           </div>

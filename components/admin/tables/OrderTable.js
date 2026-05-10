@@ -178,7 +178,7 @@ export default function OrderTable({
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
                         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-zinc-900 to-zinc-700 text-white font-black text-lg shadow-lg">
-                          {order.user?.name?.charAt(
+                          {order.customer?.name?.charAt(
                             0
                           )}
                         </div>
@@ -191,12 +191,12 @@ export default function OrderTable({
                             />
 
                             <p className="font-bold text-zinc-900">
-                              {order.user?.name}
+                              {order.customer?.name}
                             </p>
                           </div>
 
                           <p className="text-sm text-zinc-500 mt-1">
-                            {order.user?.email}
+                            {order.customer?.email}
                           </p>
 
                           <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-400">
@@ -228,7 +228,7 @@ export default function OrderTable({
 
                             <p className="text-sm font-medium text-zinc-700 leading-relaxed">
                               {
-                                order.pickup_address
+                                order.pickupAddress
                               }
                             </p>
                           </div>
@@ -256,7 +256,7 @@ export default function OrderTable({
 
                             <p className="text-sm font-semibold text-zinc-900 leading-relaxed">
                               {
-                                order.destination_address
+                                order.destinationAddress
                               }
                             </p>
                           </div>
@@ -305,7 +305,7 @@ export default function OrderTable({
 
                         <p className="text-lg font-black tracking-tight text-zinc-900">
                           Rp{" "}
-                          {order.price.toLocaleString(
+                          {order.totalPrice.toLocaleString(
                             "id-ID"
                           )}
                         </p>

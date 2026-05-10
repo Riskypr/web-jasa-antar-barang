@@ -13,7 +13,8 @@ import {
 } from "lucide-react";
 
 import { motion, AnimatePresence } from "framer-motion";
-
+import UserDetailModal from "@/components/admin/modals/UserDetailModal";
+import DeleteUserModal from "@/components/admin/modals/DeleteUserModal";
 import { useToast } from "@/hooks/useToast";
 
 export default function UserTable({
@@ -21,6 +22,15 @@ export default function UserTable({
 }) {
   const [users, setUsers] =
     useState(initialUsers);
+
+  const [selectedUser, setSelectedUser] =
+    useState(null);
+
+  const [detailOpen, setDetailOpen] =
+    useState(false);
+
+  const [deleteOpen, setDeleteOpen] =
+    useState(false);
 
   const { success, error } = useToast();
 
@@ -244,41 +254,34 @@ export default function UserTable({
                   <td className="px-8 py-6">
                     <div className="flex items-center justify-center gap-2">
                       <button
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setDeleteOpen(true);
+                        }}
                         className="
-                          w-11 h-11 rounded-2xl
-                          border border-black/5
-                          hover:bg-zinc-100
-                          transition-all
-                          flex items-center justify-center
-                        "
-                      >
-                        <Edit3 size={16} />
-                      </button>
-
-                      <button
-                        onClick={() =>
-                          handleDelete(user.id)
-                        }
-                        className="
-                          w-11 h-11 rounded-2xl
-                          border border-red-100
-                          hover:bg-red-50
-                          text-red-500
-                          transition-all
-                          flex items-center justify-center
-                        "
+    w-11 h-11 rounded-2xl
+    border border-red-100
+    hover:bg-red-50
+    text-red-500
+    transition-all
+    flex items-center justify-center
+  "
                       >
                         <Trash2 size={16} />
                       </button>
 
                       <button
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setDetailOpen(true);
+                        }}
                         className="
-                          w-11 h-11 rounded-2xl
-                          bg-black text-white
-                          hover:scale-105
-                          transition-all
-                          flex items-center justify-center
-                        "
+    w-11 h-11 rounded-2xl
+    bg-black text-white
+    hover:scale-105
+    transition-all
+    flex items-center justify-center
+  "
                       >
                         <ChevronRight size={18} />
                       </button>
@@ -289,6 +292,22 @@ export default function UserTable({
             </AnimatePresence>
           </tbody>
         </table>
+        <UserDetailModal
+          open={detailOpen}
+          onClose={() => setDetailOpen(false)}
+          user={selectedUser}
+        />
+
+        <DeleteUserModal
+          open={deleteOpen}
+          onClose={() => setDeleteOpen(false)}
+          user={selectedUser}
+          onDeleted={(id) =>
+            setUsers((prev) =>
+              prev.filter((u) => u.id !== id)
+            )
+          }
+        />
       </div>
     </div>
   );

@@ -1,196 +1,143 @@
+// app/(admin)/admin/report/page.js
+
 import { prisma } from "@/lib/prisma";
-import FinancialDashboard from "@/components/admin/FinancialDashboard";
+
 import {
-  Wallet,
-  TrendingUp,
-  CircleDollarSign,
+  Truck,
+  Bike,
+  Car,
+  Package,
   Activity,
+  TrendingUp,
 } from "lucide-react";
 
-export default async function AdminReportsPage() {
-  const now = new Date();
+import ArmadaManagement from "@/components/admin/armada/ArmadaManagement";
 
-  const startOfYear = new Date(now.getFullYear(), 0, 1);
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const startOfDay = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate()
-  );
-
-  const orders = await prisma.order.findMany({
-    where: {
-      payment_status: "paid",
-      created_at: {
-        gte: startOfYear,
+export default async function AdminArmadaPage() {
+  const vehicles =
+    await prisma.vehicle.findMany({
+      orderBy: {
+        createdAt: "desc",
       },
-    },
-    select: {
-      price: true,
-      vehicle: true,
-      created_at: true,
-    },
-  });
+      include: {
+        _count: {
+          select: {
+            orders: true,
+          },
+        },
+      },
+    });
 
-  // =========================
-  // REVENUE STATS
-  // =========================
-
-  const dailyRevenue = orders
-    .filter((o) => o.created_at >= startOfDay)
-    .reduce((acc, curr) => acc + curr.price, 0);
-
-  const monthlyRevenue = orders
-    .filter((o) => o.created_at >= startOfMonth)
-    .reduce((acc, curr) => acc + curr.price, 0);
-
-  const yearlyRevenue = orders.reduce(
-    (acc, curr) => acc + curr.price,
-    0
-  );
-
-  const totalTransactions = orders.length;
-
-  // =========================
-  // MONTHLY CHART
-  // =========================
-
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "Mei",
-    "Jun",
-    "Jul",
-    "Agt",
-    "Sep",
-    "Okt",
-    "Nov",
-    "Des",
-  ];
-
-  const monthlyChart = months.map((month, index) => {
-    const revenue = orders
-      .filter(
-        (o) => new Date(o.created_at).getMonth() === index
-      )
-      .reduce((acc, curr) => acc + curr.price, 0);
-
-    return {
-      month,
-      revenue,
-    };
-  });
-
-  // =========================
-  // VEHICLE REVENUE
-  // =========================
-
-  const byVehicle = {
-    motor: orders
-      .filter((o) => o.vehicle.toLowerCase() === "motor")
-      .reduce((acc, curr) => acc + curr.price, 0),
-
-    mobil: orders
-      .filter((o) => o.vehicle.toLowerCase() === "mobil")
-      .reduce((acc, curr) => acc + curr.price, 0),
-
-    truck: orders
-      .filter((o) => o.vehicle.toLowerCase() === "truck")
-      .reduce((acc, curr) => acc + curr.price, 0),
-  };
+  const totalArmada = vehicles.length;
+  const motorCount = vehicles.filter(
+    (v) => v.type === "MOTOR" ).length;
+  const mobilCount = vehicles.filter(
+    (v) => v.type === "MOBIL" ).length;
+  const truckCount = vehicles.filter(
+    (v) => v.type === "TRUCK" ).length;
 
   const statsCards = [
     {
-      title: "Pendapatan Hari Ini",
-      value: `Rp ${dailyRevenue.toLocaleString("id-ID")}`,
-      icon: Wallet,
+      title: "Total Armada",
+      value: totalArmada,
+      icon: Package,
+      color: "from-black to-gray-800",
     },
     {
-      title: "Pendapatan Bulan Ini",
-      value: `Rp ${monthlyRevenue.toLocaleString("id-ID")}`,
-      icon: TrendingUp,
+      title: "Motor",
+      value: motorCount,
+      icon: Bike,
+      color: "from-amber-500 to-orange-500",
     },
     {
-      title: "Pendapatan Tahun Ini",
-      value: `Rp ${yearlyRevenue.toLocaleString("id-ID")}`,
-      icon: CircleDollarSign,
+      title: "Mobil",
+      value: mobilCount,
+      icon: Car,
+      color: "from-blue-500 to-cyan-500",
     },
     {
-      title: "Total Transaksi",
-      value: totalTransactions,
-      icon: Activity,
+      title: "Truck",
+      value: truckCount,
+      icon: Truck,
+      color: "from-violet-500 to-purple-600",
     },
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
         <div>
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-5">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-600">
-              Financial Overview
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white mb-5">
+            <Truck size={14} />
+
+            <span className="text-xs font-bold uppercase tracking-[0.2em]">
+              Armada Management
             </span>
           </div>
 
           <h1 className="text-4xl md:text-5xl font-black tracking-tight text-gray-950">
-            Financial Analytics
+            Management Armada
           </h1>
 
           <p className="text-gray-500 mt-3 text-base max-w-2xl">
-            Pantau performa pendapatan JaBarin secara realtime
-            berdasarkan transaksi, armada, dan pertumbuhan bisnis.
+            Kelola seluruh armada JaBarin,
+            termasuk tambah, edit, dan hapus
+            kendaraan dengan sistem modern.
           </p>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-3xl px-5 py-4 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold">
-            Last Update
+        {/* SUMMARY CARD */}
+        <div className=" relative overflow-hidden bg-gradient-to-br from-black to-gray-800 text-white rounded-3xl px-6 py-5 shadow-2xl min-w-[220px] " >
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+          <p className="text-xs uppercase tracking-[0.2em] text-white/60">
+            Total Kendaraan
           </p>
 
-          <h3 className="text-sm font-bold text-gray-900 mt-1">
-            {now.toLocaleString("id-ID")}
+          <h3 className="text-4xl font-black mt-2">
+            {totalArmada}
           </h3>
+
+          <div className="flex items-center gap-2 mt-4 text-emerald-300 text-sm font-semibold">
+            <TrendingUp size={16} />
+            +12% bulan ini
+          </div>
         </div>
       </div>
 
-      {/* STATS */}
+      {/* STATS CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {statsCards.map((item, idx) => (
-          <div
-            key={idx}
-            className="bg-white border border-gray-200 rounded-[30px] p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-          >
-            <div className="flex items-start justify-between">
+          <div key={idx} className=" relative overflow-hidden bg-white border border-gray-200 rounded-[28px] p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 " >
+            {/* gradient bg */}
+           <div className={` absolute -top-10 -right-10 w-32 h-32 rounded-full bg-gradient-to-br ${item.color} opacity-10 blur-2xl `} />
+
+            <div className="relative flex items-start justify-between">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.2em] text-gray-400 font-black">
                   {item.title}
                 </p>
 
-                <h3 className="text-2xl font-black tracking-tight text-gray-950 mt-4">
+                <h3 className="text-3xl font-black tracking-tight text-gray-950 mt-4">
                   {item.value}
                 </h3>
-              </div>
 
-              <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center">
-                <item.icon
-                  size={26}
-                  className="text-gray-900"
-                />
+                <p className="text-xs text-gray-400 mt-2">
+                  aktif armada terdaftar
+                </p>
+              </div>
+              
+              <div className=" w-14 h-14 rounded-2xl bg-black text-white flex items-center justify-center shadow-lg " >
+                <item.icon size={24} />
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* DASHBOARD */}
-      <FinancialDashboard
-        chartData={monthlyChart}
-        byVehicle={byVehicle}
-        yearlyRevenue={yearlyRevenue}
+      {/* TABLE */}
+      <ArmadaManagement
+        initialVehicles={vehicles}
       />
     </div>
   );

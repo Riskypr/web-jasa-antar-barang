@@ -12,15 +12,25 @@ import {
 export default async function AdminOrdersPage() {
   const orders = await prisma.order.findMany({
     include: {
-      user: {
+      customer: {
         select: {
           name: true,
           email: true,
         },
       },
+
+      payment: true,
+
+      vehicle: {
+        select: {
+          name: true,
+          type: true,
+        },
+      },
     },
+
     orderBy: {
-      created_at: "desc",
+      createdAt: "desc",
     },
   });
 
@@ -28,16 +38,19 @@ export default async function AdminOrdersPage() {
     total: orders.length,
 
     pending: orders.filter(
-      (o) => o.order_status === "menunggu"
+      (o) => o.status === "PENDING"
     ).length,
 
     completed: orders.filter(
-      (o) => o.order_status === "selesai"
+      (o) => o.status === "COMPLETED"
     ).length,
 
     revenue: orders
-      .filter((o) => o.payment_status === "paid")
-      .reduce((acc, curr) => acc + curr.price, 0),
+      .filter((o) => o.payment?.status === "PAID")
+      .reduce(
+        (acc, curr) => acc + curr.totalPrice,
+        0
+      ),
   };
 
   return (
