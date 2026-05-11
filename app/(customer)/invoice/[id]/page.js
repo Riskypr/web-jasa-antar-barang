@@ -1,8 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import InvoiceActions from "@/components/order/invoice/InvoiceActions";
-import { VEHICLES } from "@/constants/vehicles";
-import { ADMIN_FEE } from "@/utils/pricing";
+import { ADMIN_FEE, calculateVehiclePrice, calculateTotalPrice, } from "@/utils/pricing";
 
 export default async function InvoicePage({ params }) {
   const { id } = await params;
@@ -11,23 +10,33 @@ export default async function InvoicePage({ params }) {
 
   const order = await prisma.order.findUnique({
     where: { id },
-    include: { user: true },
+
+    include: {
+      customer: true,
+      vehicle: true,
+      payment: true,
+    },
   });
 
   if (!order) return notFound();
+  const pricePerKm =
+    order.vehicle?.pricePerKm || 0;
 
-  const selectedVehicle = VEHICLES.find(
-    (v) => v.name.toLowerCase() === order.vehicle.toLowerCase()
-  );
+  const basePrice =
+    order.basePrice || 0;
 
-  const pricePerKm = selectedVehicle?.price || 0;
+  const distancePrice =
+    order.distancePrice || 0;
 
-  const servicePrice = Math.round(Number(order.distance) * pricePerKm);
+  const totalServicePrice =
+    Number(order.distance) <= 1
+      ? basePrice
+      : distancePrice;
 
   const paymentStatus = {
-    paid: "LUNAS",
-    pending: "MENUNGGU PEMBAYARAN",
-    failed: "GAGAL",
+    PAID: "LUNAS",
+    PENDING: "MENUNGGU PEMBAYARAN",
+    FAILED: "GAGAL",
   };
 
   return (
@@ -99,7 +108,7 @@ export default async function InvoicePage({ params }) {
                     <div>
                       <p className="text-[10px] uppercase tracking-widest text-blue-200 mb-1">Tanggal</p>
                       <p className="text-xs md:text-sm font-medium print:text-xs">
-                        {new Date(order.created_at).toLocaleDateString("id-ID", {
+                        {new Date(order.createdAt).toLocaleDateString("id-ID", {
                           day: "numeric", month: "long", year: "numeric",
                         })}
                       </p>
@@ -118,9 +127,9 @@ export default async function InvoicePage({ params }) {
                       Ditagihkan Kepada
                     </p>
                     <div className="space-y-1">
-                      <p className="text-xl md:text-2xl font-bold text-slate-900 print:text-lg">{order.user?.name || "-"}</p>
-                      <p className="text-sm text-slate-500 print:text-xs">{order.user?.email || "-"}</p>
-                      <p className="text-sm text-slate-600 pt-1 print:text-xs print:pt-0">{order.user?.phone || "-"}</p>
+                      <p className="text-xl md:text-2xl font-bold text-slate-900 print:text-lg">{order.customer?.name || "-"}</p>
+                      <p className="text-sm text-slate-500 print:text-xs">{order.customer?.email || "-"}</p>
+                      <p className="text-sm text-slate-600 pt-1 print:text-xs print:pt-0">{order.customer?.phone || "-"}</p>
                     </div>
                   </div>
 
@@ -132,12 +141,12 @@ export default async function InvoicePage({ params }) {
                       <div>
                         <p className="text-xs text-slate-400 mb-1 capitalize print:text-[9px]">Status Pembayaran</p>
                         <div className="inline-flex px-3 py-1 rounded-lg bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-bold uppercase print:bg-transparent print:border-none print:p-0 print:text-sm">
-                          {paymentStatus[order.payment_status] || order.payment_status}
+                          {paymentStatus[order.payment?.status] || order.payment?.status}
                         </div>
                       </div>
                       <div>
                         <p className="text-xs text-slate-400 mb-1 capitalize print:text-[9px]">Metode Pembayaran</p>
-                        <p className="text-sm font-semibold text-slate-800 uppercase print:text-xs">{order.payment_method || "MIDTRANS"}</p>
+                        <p className="text-sm font-semibold text-slate-800 uppercase print:text-xs">{order.payment?.paymentMethod || "MIDTRANS"}</p>
                       </div>
                     </div>
                   </div>
@@ -154,7 +163,7 @@ export default async function InvoicePage({ params }) {
 
                   <div className="grid grid-cols-1 md:grid-cols-12 px-6 py-6 items-center gap-4 md:gap-0 print:grid-cols-12 print:py-3 print:gap-0">
                     <div className="col-span-5">
-                      <p className="font-bold text-slate-900 text-sm md:text-base print:text-sm">Pengiriman {order.vehicle}</p>
+                      <p className="font-bold text-slate-900 text-sm md:text-base print:text-sm">Pengiriman {order.vehicle?.name}</p>
                       <p className="text-xs text-slate-500 mt-1 print:hidden">Layanan pengiriman paket cepat.</p>
                     </div>
                     <div className="col-span-2 text-left md:text-center text-sm font-semibold text-slate-700 print:text-center print:text-xs">
@@ -166,7 +175,7 @@ export default async function InvoicePage({ params }) {
                     </div>
                     <div className="col-span-3 text-left md:text-right font-bold text-slate-900 text-lg print:text-base print:text-right">
                       <span className="md:hidden print:hidden text-slate-400 font-normal text-sm block mb-1 uppercase tracking-tighter text-[10px]">Total</span>
-                      Rp {order.price.toLocaleString("id-ID")}
+                      Rp {order.totalPrice.toLocaleString("id-ID")}
                     </div>
                   </div>
                 </div>
@@ -175,11 +184,11 @@ export default async function InvoicePage({ params }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:grid-cols-2 print:gap-4">
                   <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 print:bg-transparent print:p-2">
                     <p className="text-[10px] uppercase font-bold text-slate-400 mb-2 print:mb-1">Titik Jemput</p>
-                    <p className="text-xs leading-relaxed text-slate-700 print:text-[10px]">{order.pickup_address}</p>
+                    <p className="text-xs leading-relaxed text-slate-700 print:text-[10px]">{order.pickupAddress}</p>
                   </div>
                   <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 print:bg-transparent print:p-2">
                     <p className="text-[10px] uppercase font-bold text-slate-400 mb-2 print:mb-1">Tujuan Pengiriman</p>
-                    <p className="text-xs leading-relaxed text-slate-700 print:text-[10px]">{order.destination_address}</p>
+                    <p className="text-xs leading-relaxed text-slate-700 print:text-[10px]">{order.destinationAddress}</p>
                   </div>
                 </div>
 
@@ -188,29 +197,57 @@ export default async function InvoicePage({ params }) {
                 <div className="border-t border-dashed border-slate-200 pt-6 print:pt-4">
                   <div className="max-w-[320px] md:max-w-sm ml-auto space-y-3 print:space-y-1">
 
-                    {/* Rincian Jarak */}
+                    {Number(order.distance) <= 1 ? (
+                      <div className="flex justify-between text-sm text-slate-600 font-medium print:text-[12px]">
+                        <span className="text-slate-400 text-xs print:text-[12px]">
+                          Biaya Dasar Kendaraan
+                        </span>
+
+                        <span>
+                          Rp {Number(order.basePrice || 0).toLocaleString("id-ID")}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex justify-between text-sm text-slate-600 font-medium print:text-[12px]">
+                        <span className="text-slate-400 text-xs print:text-[12px]">
+                          {Number(order.distance) <= 1
+                            ? "Biaya Minimum Pengiriman"
+                            : `Biaya Jarak (${Number(order.distance)
+                              .toFixed(1)
+                              .replace(".0", "")} km × Rp ${pricePerKm.toLocaleString("id-ID")})`}
+                        </span>
+
+                        <span>
+                          Rp {(Number(order.distance) * Number(pricePerKm))
+                            .toLocaleString("id-ID")}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* ADMIN FEE */}
                     <div className="flex justify-between text-sm text-slate-600 font-medium print:text-[12px]">
                       <span className="text-slate-400 text-xs print:text-[12px]">
-                        Biaya Layanan ({Number(order.distance).toFixed(1)} km × Rp {pricePerKm.toLocaleString("id-ID")})
+                        Biaya Admin & Aplikasi
                       </span>
-                      <span>Rp {servicePrice.toLocaleString("id-ID")}</span>
+
+                      <span>
+                        Rp {ADMIN_FEE.toLocaleString("id-ID")}
+                      </span>
                     </div>
 
-                    {/* Biaya Admin */}
-                    <div className="flex justify-between text-sm text-slate-600 font-medium print:text-[12px]">
-                      <span className="text-slate-400 text-xs print:text-[12px]">Biaya Admin & Aplikasi</span>
-                      <span>Rp {ADMIN_FEE.toLocaleString("id-ID")}</span>
-                    </div>
-
-                    {/* Garis Pemisah Total */}
+                    {/* TOTAL */}
                     <div className="flex justify-between items-center pt-4 border-t border-slate-200 print:pt-2">
                       <span className="text-sm md:text-base font-bold text-slate-900 print:text-sm">
                         Total Akhir
                       </span>
+
                       <div className="text-right">
                         <span className="text-2xl md:text-3xl font-black text-gray-800 print:text-xl block">
-                          Rp {order.price.toLocaleString("id-ID")}
+                          Rp 
+                            {(Number(order.distance) * Number(pricePerKm)+ ADMIN_FEE 
+                          ).toLocaleString("id-ID")}
                         </span>
+
                         <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider print:hidden">
                           Lunas Terbayar
                         </span>
@@ -233,8 +270,8 @@ export default async function InvoicePage({ params }) {
 
               </div>
             </div>
-            </div>
           </div>
+        </div>
       </main>
     </>
   );
