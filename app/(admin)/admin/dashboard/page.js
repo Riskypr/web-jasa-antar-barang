@@ -77,7 +77,7 @@ export default async function AdminDashboard() {
 
   const recentLogs =
     await prisma.activityLog.findMany({
-      take: 6,
+      take: 4,
 
       orderBy: {
         createdAt: "desc",

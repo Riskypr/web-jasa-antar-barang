@@ -83,9 +83,9 @@ export default function OrderTable({
         orders.map((o) =>
           o.id === orderId
             ? {
-                ...o,
-                order_status: newStatus,
-              }
+              ...o,
+              order_status: newStatus,
+            }
             : o
         )
       );
@@ -126,36 +126,33 @@ export default function OrderTable({
               <th className="px-8 py-5 text-left text-[11px] font-black uppercase tracking-[0.25em] text-zinc-400">
                 Customer
               </th>
-
               <th className="px-8 py-5 text-left text-[11px] font-black uppercase tracking-[0.25em] text-zinc-400">
                 Pengiriman
               </th>
-
               <th className="px-8 py-5 text-left text-[11px] font-black uppercase tracking-[0.25em] text-zinc-400">
                 Armada
               </th>
-
               <th className="px-8 py-5 text-left text-[11px] font-black uppercase tracking-[0.25em] text-zinc-400">
                 Pembayaran
               </th>
-
               <th className="px-8 py-5 text-left text-[11px] font-black uppercase tracking-[0.25em] text-zinc-400">
                 Status
               </th>
-
-              <th className="px-8 py-5 text-right text-[11px] font-black uppercase tracking-[0.25em] text-zinc-400">
+              {/* <th className="px-8 py-5 text-right text-[11px] font-black uppercase tracking-[0.25em] text-zinc-400">
                 Action
-              </th>
+              </th> */}
             </tr>
           </thead>
 
           <tbody>
             <AnimatePresence mode="popLayout">
               {orders.map((order, index) => {
+                const vehicleType =
+                  order.vehicle?.name
+                    ?.toLowerCase();
+
                 const vehicle =
-                  VEHICLE_THEME[
-                    order.vehicle.toLowerCase()
-                  ] ||
+                  VEHICLE_THEME[vehicleType] ||
                   VEHICLE_THEME.motor;
 
                 return (
@@ -277,7 +274,7 @@ export default function OrderTable({
                         <span
                           className={`text-sm font-bold ${vehicle.color}`}
                         >
-                          {order.vehicle}
+                          {order.vehicle?.name}
                         </span>
                       </div>
                     </td>
@@ -290,7 +287,7 @@ export default function OrderTable({
                             size={15}
                             className={
                               order.payment_status ===
-                              "paid"
+                                "paid"
                                 ? "text-emerald-500"
                                 : "text-amber-500"
                             }
@@ -315,15 +312,14 @@ export default function OrderTable({
                     {/* STATUS */}
                     <td className="px-8 py-6">
                       <div
-                        className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-black uppercase tracking-wider ${
-                          order.order_status ===
-                          "selesai"
+                        className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-black uppercase tracking-wider ${order.order_status ===
+                            "selesai"
                             ? "bg-emerald-100 text-emerald-700"
                             : "bg-amber-100 text-amber-700"
-                        }`}
+                          }`}
                       >
                         {order.order_status ===
-                        "selesai" ? (
+                          "selesai" ? (
                           <CheckCircle2 size={14} />
                         ) : (
                           <Clock3 size={14} />
@@ -334,23 +330,23 @@ export default function OrderTable({
                     </td>
 
                     {/* ACTION */}
-                    <td className="px-8 py-6 text-right">
+                    {/* <td className="px-8 py-6 text-right">
                       {order.order_status !==
                         "selesai" && (
-                        <button
-                          onClick={() =>
-                            updateStatus(
-                              order.id,
-                              "selesai"
-                            )
-                          }
-                          className="inline-flex items-center gap-2 rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-bold text-white hover:bg-black transition-all"
-                        >
-                          <CheckCircle2 size={16} />
-                          Selesaikan
-                        </button>
-                      )}
-                    </td>
+                          <button
+                            onClick={() =>
+                              updateStatus(
+                                order.id,
+                                "selesai"
+                              )
+                            }
+                            className="inline-flex items-center gap-2 rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-bold text-white hover:bg-black transition-all"
+                          >
+                            <CheckCircle2 size={16} />
+                            Selesaikan
+                          </button>
+                        )}
+                    </td> */}
                   </motion.tr>
                 );
               })}

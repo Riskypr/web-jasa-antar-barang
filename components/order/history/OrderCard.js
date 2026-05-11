@@ -67,6 +67,7 @@ export const OrderCard = ({
         "
         style={{
           backgroundImage: `url('${bg}')`,
+          filter: `grayscale(100%)`,
           WebkitMaskImage:
             "linear-gradient(to bottom, black 20%, transparent 100%)",
         }}
@@ -127,7 +128,7 @@ export const OrderCard = ({
             label="Pickup"
             address={order.pickupAddress}
             icon={<MapPin size={12} />}
-            color="text-emerald-500"
+            color="text-gray-800"
           />
 
           <AddressBlock
@@ -138,7 +139,7 @@ export const OrderCard = ({
             icon={
               <Navigation size={12} />
             }
-            color="text-sky-500"
+            color="text-gray-800"
             isLast
           />
         </div>

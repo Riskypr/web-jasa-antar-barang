@@ -64,9 +64,9 @@ export default async function AdminArmadaPage() {
   ];
 
   return (
-    <div className="space-y-10">
+    <div >
       {/* HEADER */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+      <div className="flex mb-8 flex-col lg:flex-row lg:items-end justify-between gap-6">
         <div>
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white mb-5">
             <Truck size={14} />
@@ -106,7 +106,7 @@ export default async function AdminArmadaPage() {
       </div>
 
       {/* STATS CARDS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div className="grid mb-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {statsCards.map((item, idx) => (
           <div key={idx} className=" relative overflow-hidden bg-white border border-gray-200 rounded-[28px] p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 " >
             {/* gradient bg */}

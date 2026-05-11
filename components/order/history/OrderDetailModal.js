@@ -222,7 +222,7 @@ export default function OrderDetailModal({
             <div className="flex gap-3">
               <MapPin
                 className="
-                  text-emerald-500
+                  text-gray-800
                 "
               />
 
@@ -244,7 +244,7 @@ export default function OrderDetailModal({
             <div className="flex gap-3">
               <Navigation
                 className="
-                  text-sky-500
+                  text-gray-800
                 "
               />
 
