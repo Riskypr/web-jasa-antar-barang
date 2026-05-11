@@ -7,6 +7,8 @@ import VehicleCard from "./VehicleCard";
 import RouteCard from "./RouteCard";
 import PaymentDetailCard from "./PaymentDetailCard";
 import PayButton from "./PayButton";
+import { calculateOrderPrice }
+from "@/utils/pricing";
 
 export default function PaymentSummary({
   orderData,

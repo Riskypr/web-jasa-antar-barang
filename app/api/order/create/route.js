@@ -1,9 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import {
+  ADMIN_FEE,
+  calculateVehiclePrice,
+  calculateTotalPrice,
+} from "@/utils/pricing";
 
 export async function POST(req) {
   try {
+    // const cookieStore = cookies();
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
@@ -20,21 +26,65 @@ export async function POST(req) {
 
     const body = await req.json();
 
-    const order = await prisma.order.create({
-      data: {
-        vehicle: body.vehicle,
-        pickup_address: body.pickup_address,
-        destination_address: body.destination_address,
-        distance: body.distance,
-        duration: body.duration,
-        price: body.price,
-        userId: decoded.userId,
-      },
-    });
+    // ambil vehicle dari DB (biar dapet ID + harga asli)
+    const vehicle =
+      await prisma.vehicle.findUnique({
+        where: {
+          id: body.vehicleId,
+        },
+      });
+
+    if (!vehicle) {
+      return Response.json({ error: "Vehicle tidak ditemukan" }, { status: 404 });
+    }
+
+    const servicePrice =
+  calculateVehiclePrice(
+    Number(body.distance),
+    vehicle.pricePerKm,
+    vehicle.basePrice
+  );
+
+const totalPrice =
+  calculateTotalPrice(
+    Number(body.distance),
+    vehicle.pricePerKm,
+    vehicle.basePrice
+  );
+
+const distancePrice =
+  Math.max(
+    0,
+    servicePrice -
+      vehicle.basePrice
+  );
+
+const order =
+  await prisma.order.create({
+    data: {
+      customerId: decoded.userId,
+      vehicleId: vehicle.id,
+      pickupAddress: body.pickupAddress,
+      destinationAddress: body.destinationAddress,
+      distance: Number(body.distance),
+      duration: Number(body.duration),
+      // harga minimum armada
+      basePrice: vehicle.basePrice,
+      // tambahan jarak
+      distancePrice,
+      // FINAL TOTAL
+      totalPrice,
+
+      status: "PENDING",
+    },
+  });
 
     return Response.json(order);
   } catch (err) {
     console.error(err);
-    return Response.json({ error: "Gagal simpan order" }, { status: 500 });
+    return Response.json(
+      { error: "Gagal simpan order" },
+      { status: 500 }
+    );
   }
 }

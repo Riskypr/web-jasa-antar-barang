@@ -1,5 +1,8 @@
 export const ORDER_STATUS = {
-  WAITING: "menunggu pembayaran",
-  PROCESS: "diproses",
-  CANCELLED: "dibatalkan",
+  PENDING: "PENDING",
+  PROCESS: "PROCESS",
+  PICKUP: "PICKUP",
+  DELIVERY: "DELIVERY",
+  COMPLETED: "COMPLETED",
+  CANCELLED: "CANCELLED",
 };

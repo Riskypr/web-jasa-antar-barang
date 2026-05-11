@@ -2,6 +2,7 @@
 
 import { CreditCard, Info } from "@/components/icons";
 import { formatPrice } from "@/utils/format";
+import { calculateOrderPrice } from "@/utils/pricing";
 
 export default function PaymentDetailCard({
   vehicle,

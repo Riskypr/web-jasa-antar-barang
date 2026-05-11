@@ -1,6 +1,8 @@
 "use client";
 
 import { MapPin, Clock, Navigation } from "@/components/icons";
+import { vehicleIcons } from "@/utils/vehicleIcons";
+import { ADMIN_FEE, calculateVehiclePrice, calculateTotalPrice, } from "@/utils/pricing";
 
 export default function OrderCard({
   distance,
@@ -11,20 +13,29 @@ export default function OrderCard({
   vehicle,
   paymentStatus,
 }) {
- 
+
   if (!vehicle) {
     return (
       <div className="bg-white rounded-2xl p-5 border text-center text-sm text-gray-500">
-        Pilih armada terlebih dahulu 
+        Pilih armada terlebih dahulu
       </div>
     );
   }
 
-  const Icon = vehicle.icon;
+  const Icon =
+    vehicle
+      ? vehicleIcons[vehicle.type]
+      : null;
 
-  const harga = distance
-    ? Math.round(distance * vehicle.price + 2000)
-    : 0;
+const harga = distance
+  ? calculateTotalPrice(
+      distance,
+      vehicle.pricePerKm,
+      vehicle.basePrice
+    )
+  : 0;
+
+
 
   return (
     <div className="bg-white rounded-2xl p-5 ">
@@ -40,7 +51,12 @@ export default function OrderCard({
         </div>
 
         <div className="flex items-center gap-2 text-xs bg-gray-100 px-3 py-1.5 rounded-full">
-          <Icon size={14} className="text-gray-600" />
+          {Icon && (
+            <Icon
+              size={14}
+              className="text-gray-600"
+            />
+          )}
           <span className="text-gray-700 font-medium">
             {vehicle.name}
           </span>
@@ -109,31 +125,16 @@ export default function OrderCard({
             Estimasi Pembayaran
           </p>
           <h2 className="text-xl font-bold text-gray-900">
-            {distance ? `Rp ${harga.toLocaleString()}` : "..."}
+            Rp {harga.toLocaleString("id-ID")}
           </h2>
         </div>
       </div>
-
-      {/* STATUS */}
-      {paymentStatus && (
-        <div className="mb-3 p-3 rounded-xl bg-green-50 text-green-600 text-xs border">
-          Pembayaran: {paymentStatus}
-        </div>
-      )}
-
-      {/* STATUS ORDER */}
-      {paymentStatus === "PAID" && (
-        <div className="mb-3 p-3 rounded-xl bg-blue-50 text-blue-600 text-xs border">
-          Pesanan sedang diproses 
-        </div>
-      )}
 
       {/* BUTTON */}
       <button
         onClick={onPay}
         className="w-full mt-3 flex items-center justify-center gap-2 bg-gray-900 text-white font-semibold py-3 rounded-xl hover:opacity-90 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
       >
-        
         Pesan Sekarang
       </button>
     </div>

@@ -1,15 +1,18 @@
-export async function createOrder(payload) {
+export async function createOrder(data) {
   const res = await fetch("/api/order/create", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(payload),
+    credentials: "include",
+    body: JSON.stringify(data),
   });
 
+  const result = await res.json();
+
   if (!res.ok) {
-    throw new Error("Gagal membuat order");
+    throw new Error(result.error || "Gagal membuat order");
   }
 
-  return res.json();
+  return result;
 }

@@ -20,12 +20,12 @@ export default function RouteCard({
         <div className="absolute left-[11px] top-4 bottom-4 w-[2px] border-l-2 border-dashed border-gray-200"></div>
 
         <div className="flex gap-4 relative z-10">
-          <div className="bg-emerald-500 w-6 h-6 rounded-full flex items-center justify-center ring-4 ring-emerald-50">
+          <div className="bg-gray-800 w-6 h-6 rounded-full flex items-center justify-center ring-4 ring-emerald-50">
             <MapPin size={12} className="text-white" />
           </div>
 
           <div className="flex-1">
-            <p className="text-[12px] font-bold text-emerald-500">
+            <p className="text-[12px] font-bold text-gray-500">
               Titik Jemput
             </p>
 
@@ -36,12 +36,12 @@ export default function RouteCard({
         </div>
 
         <div className="flex gap-4 relative z-10">
-          <div className="bg-blue-600 w-6 h-6 rounded-full flex items-center justify-center ring-4 ring-indigo-50">
+          <div className="bg-gray-900 w-6 h-6 rounded-full flex items-center justify-center ring-4 ring-indigo-50">
             <Navigation size={12} className="text-white" />
           </div>
 
           <div className="flex-1">
-            <p className="text-[12px] font-bold text-blue-600">
+            <p className="text-[12px] font-bold text-gray-500">
               Tujuan Pengiriman
             </p>
 

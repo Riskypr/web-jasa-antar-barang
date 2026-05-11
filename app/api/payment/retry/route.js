@@ -33,7 +33,8 @@ export async function POST(req) {
         body: JSON.stringify({
           transaction_details: {
             order_id: order.id,
-            gross_amount: Math.floor(order.price),
+            gross_amount: Math.floor(
+               order.totalPrice),
           },
 
           credit_card: {

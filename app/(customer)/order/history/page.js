@@ -42,14 +42,17 @@ export default function HistoryPage() {
     }
   };
 
-  const filteredOrders = useMemo(() => {
-    if (!filterDate) return orders;
-    return orders.filter((o) => o.created_at.startsWith(filterDate));
-  }, [orders, filterDate]);
+const filteredOrders = useMemo(() => {
+  if (!filterDate) return orders;
+
+  return orders.filter((o) =>
+    o.createdAt.startsWith(filterDate)
+  );
+}, [orders, filterDate]);
 
   const groupedOrders = useMemo(() => {
     return filteredOrders.reduce((acc, order) => {
-      const key = formatGroupDate(order.created_at);
+      const key = formatGroupDate(order.createdAt);
       if (!acc[key]) acc[key] = [];
       acc[key].push(order);
       return acc;

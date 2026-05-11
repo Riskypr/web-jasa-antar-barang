@@ -1,54 +1,63 @@
 import crypto from "crypto";
+
 import { prisma } from "@/lib/prisma";
-import { getPaymentState } from "@/lib/paymentStatus";
+
+import {
+  getPaymentState,
+} from "@/lib/paymentStatus";
 
 export async function POST(req) {
   try {
-    // console.log("WEBHOOK HIT");
-
     const body = await req.json();
 
-    // console.log("BODY:", body);
+    const orderId =
+      body.order_id;
 
-    const orderId = body.order_id;
+    // VALIDASI SIGNATURE
+    const signatureKey =
+      crypto
+        .createHash("sha512")
+        .update(
+          orderId +
+          body.status_code +
+          body.gross_amount +
+          process.env
+            .MIDTRANS_SERVER_KEY
+        )
+        .digest("hex");
 
-    // console.log("ORDER ID:", orderId);
-
-    // SIGNATURE VALIDATION
-    const signatureKey = crypto
-      .createHash("sha512")
-      .update(
-        orderId +
-        body.status_code +
-        body.gross_amount +
-        process.env.MIDTRANS_SERVER_KEY
-      )
-      .digest("hex");
-
-    console.log("LOCAL SIGN:", signatureKey);
-    console.log("MIDTRANS SIGN:", body.signature_key);
-
-    if (signatureKey !== body.signature_key) {
-      console.log("INVALID SIGNATURE");
-
+    if (
+      signatureKey !==
+      body.signature_key
+    ) {
       return Response.json(
-        { error: "Invalid signature" },
-        { status: 403 }
+        {
+          error:
+            "Invalid signature",
+        },
+        {
+          status: 403,
+        }
       );
     }
 
-    const existingOrder = await prisma.order.findUnique({
-      where: {
-        id: orderId,
-      },
-    });
+    // CEK ORDER
+    const existingOrder =
+      await prisma.order.findUnique({
+        where: {
+          id: orderId,
+        },
 
-    // console.log("FOUND ORDER:", existingOrder);
+        include: {
+          payment: true,
+        },
+      });
 
     if (!existingOrder) {
       return Response.json(
         {
-          error: "Order not found",
+          error:
+            "Order not found",
         },
         {
           status: 404,
@@ -56,39 +65,59 @@ export async function POST(req) {
       );
     }
 
-    const statusData = getPaymentState(
-      body.transaction_status
-    );
+    // AMBIL STATUS
+    const statusData =
+      getPaymentState(
+        body.transaction_status
+      );
 
+    // PAYMENT METHOD
     const paymentMethod =
-      body.va_numbers?.[0]?.bank ||
+      body.va_numbers?.[0]
+        ?.bank ||
       body.payment_type ||
       "unknown";
 
-    const updatedOrder = await prisma.order.update({
+    // UPDATE PAYMENT
+    await prisma.payment.update({
+      where: {
+        orderId: orderId,
+      },
+
+      data: {
+        status:
+          statusData.payment_status,
+
+        paymentMethod:
+          paymentMethod,
+
+        transactionId:
+          body.transaction_id,
+
+        fraudStatus:
+          body.fraud_status ||
+          null,
+      },
+    });
+
+    // UPDATE ORDER
+    await prisma.order.update({
       where: {
         id: orderId,
       },
 
       data: {
-        payment_status: statusData.payment_status,
-        order_status: statusData.order_status,
-
-        payment_method: paymentMethod,
-        payment_type: body.payment_type,
-        transaction_id: body.transaction_id,
-        fraud_status: body.fraud_status || null,
+        status:
+          statusData.order_status,
       },
     });
-
-    // console.log("UPDATED ORDER:", updatedOrder);
 
     return Response.json({
       success: true,
     });
 
   } catch (err) {
-    // console.error("WEBHOOK ERROR:", err);
+    console.error(err);
 
     return Response.json(
       {

@@ -1,9 +1,9 @@
 import { Bike, Car, Truck } from "@/components/icons";
 
 export const VEHICLE_CONFIG = {
-  Motor: { icon: Bike, bg: "/gmap/g-map-sampit.png" },
-  Mobil: { icon: Car, bg: "/gmap/g-map-pky.png" },
-  Truck: { icon: Truck, bg: "/gmap/g-map-banjarmasin.png" },
+  MOTOR: { icon: Bike, bg: "/gmap/g-map-sampit.png" },
+  MOBIL: { icon: Car, bg: "/gmap/g-map-pky.png" },
+  TRUCK: { icon: Truck, bg: "/gmap/g-map-banjarmasin.png" },
 };
 
 export const STATUS_STYLE = {

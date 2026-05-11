@@ -4,29 +4,42 @@ import { ORDER_STATUS } from "@/constants/orderStatus";
 
 export async function POST(req) {
   try {
-    const { amount, order_id } = await req.json();
+    const { order_id } = await req.json();
 
-    if (!amount || !order_id) {
+    if (!order_id) {
       return Response.json(
-        { error: "Amount & order_id wajib" },
-        { status: 400 }
+        {
+          error:
+            "order_id wajib",
+        },
+        {
+          status: 400,
+        }
       );
     }
 
-    const order = await prisma.order.findUnique({
-      where: {
-        id: order_id,
-      },
-    });
+    const order =
+      await prisma.order.findUnique({
+        where: {
+          id: order_id,
+        },
+      });
 
     if (!order) {
       return Response.json(
-        { error: "Order tidak ditemukan" },
-        { status: 404 }
+        {
+          error:
+            "Order tidak ditemukan",
+        },
+        {
+          status: 404,
+        }
       );
     }
 
-    const serverKey = process.env.MIDTRANS_SERVER_KEY;
+    const serverKey =
+      process.env
+        .MIDTRANS_SERVER_KEY;
 
     const res = await fetch(
       "https://app.sandbox.midtrans.com/snap/v1/transactions",
@@ -34,18 +47,22 @@ export async function POST(req) {
         method: "POST",
 
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type":
+            "application/json",
+
           Authorization:
             "Basic " +
-            Buffer.from(serverKey + ":").toString("base64"),
+            Buffer.from(
+              serverKey + ":"
+            ).toString("base64"),
         },
 
         body: JSON.stringify({
           transaction_details: {
             order_id,
-            gross_amount: Math.floor(amount),
+            gross_amount:
+              order.totalPrice,
           },
-
           credit_card: {
             secure: true,
           },
@@ -59,34 +76,65 @@ export async function POST(req) {
       }
     );
 
-    const data = await res.json();
+    const data =
+      await res.json();
 
     if (data.error_messages) {
       return Response.json(
         {
-          error: data.error_messages,
+          error:
+            data.error_messages,
         },
-        { status: 400 }
+        {
+          status: 400,
+        }
       );
     }
 
-    // SAVE PAYMENT DATA
+    await prisma.payment.upsert({
+      where: {
+        orderId: order_id,
+      },
+
+      update: {
+        snapToken:
+          data.token,
+
+        paymentMethod:
+          "MIDTRANS",
+
+        status:
+          PAYMENT_STATUS.PENDING,
+      },
+
+      create: {
+        orderId: order_id,
+
+        snapToken:
+          data.token,
+
+        paymentMethod:
+          "MIDTRANS",
+
+        status:
+          PAYMENT_STATUS.PENDING,
+      },
+    });
+
     await prisma.order.update({
       where: {
         id: order_id,
       },
 
       data: {
-        snap_token: data.token,
-        // redirect_url: data.redirect_url,
-
-        payment_status: PAYMENT_STATUS.PENDING,
-        order_status: ORDER_STATUS.WAITING_PAYMENT,
+        status:
+          ORDER_STATUS.PENDING,
       },
     });
 
     return Response.json({
-      redirect_url: data.redirect_url,
+      redirect_url:
+        data.redirect_url,
     });
 
   } catch (err) {
@@ -94,9 +142,12 @@ export async function POST(req) {
 
     return Response.json(
       {
-        error: "Server error",
+        error:
+          "Server error",
       },
-      { status: 500 }
+      {
+        status: 500,
+      }
     );
   }
 }

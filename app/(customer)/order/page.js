@@ -3,14 +3,11 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
 import OrderCard from "@/components/order/OrderCard";
 import PaymentSummary from "@/components/order/payment/PaymentSummary";
-
 import useOrder from "@/hooks/useOrder";
 import { getCurrentUser } from "@/services/auth";
-
-import { VEHICLES } from "@/constants/vehicles";
+import { vehicleIcons } from "@/utils/vehicleIcons";
 
 import {
   ADMIN_FEE,
@@ -26,9 +23,11 @@ const MapPicker = dynamic(
   { ssr: false }
 );
 
+
 export default function OrderPage() {
   const router = useRouter();
-
+  const [vehicles, setVehicles] =
+    useState([]);
   const [points, setPoints] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [showPayment, setShowPayment] = useState(false);
@@ -39,6 +38,24 @@ export default function OrderPage() {
     pickupAddress,
     destinationAddress,
   } = useOrder(points);
+
+  useEffect(() => {
+    async function fetchVehicles() {
+      try {
+        const res = await fetch(
+          "/api/vehicles"
+        );
+
+        const data = await res.json();
+
+        setVehicles(data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetchVehicles();
+  }, []);
 
   useEffect(() => {
     const user = getCurrentUser();
@@ -58,27 +75,22 @@ export default function OrderPage() {
 
   async function handleFinalPay() {
     try {
-      const totalPrice = calculateTotalPrice(
-        distance,
-        selectedVehicle.price
-      );
-
       const order = await createOrder({
-        vehicle: selectedVehicle.name,
-        pickup_address: pickupAddress,
-        destination_address: destinationAddress,
+        vehicleId: selectedVehicle.id,
+
+        pickupAddress,
+        destinationAddress,
+
         distance,
         duration,
-        price: totalPrice,
       });
 
       const redirectUrl = await createOrderPayment(
-        totalPrice,
+        order.totalPrice,
         order.id
       );
 
       window.location.href = redirectUrl;
-
     } catch (err) {
       console.error(err);
     }
@@ -94,7 +106,8 @@ export default function OrderPage() {
           distance,
           price: calculateVehiclePrice(
             distance,
-            selectedVehicle.price
+            selectedVehicle.pricePerKm,
+            selectedVehicle.basePrice
           ),
           adminFee: ADMIN_FEE,
         }}
@@ -125,35 +138,40 @@ export default function OrderPage() {
 
               <div className="space-y-2">
 
-                {VEHICLES.map((vehicle) => {
-                  const Icon = vehicle.icon;
+                {vehicles.map((vehicle) => {
+                  const Icon =
+                    vehicleIcons[vehicle.type];
 
                   const isSelected =
-                    selectedVehicle?.name === vehicle.name;
+                    selectedVehicle?.id ===
+                    vehicle.id;
 
                   return (
                     <button
-                      key={vehicle.name}
+                      key={vehicle.id}
                       onClick={() =>
                         setSelectedVehicle(vehicle)
                       }
                       className={`
-                        w-full flex items-center justify-between
-                        p-3 rounded-xl transition-all duration-200
-                        ${
-                          isSelected
-                            ? "bg-gray-900 text-white shadow-md"
-                            : "bg-gray-100 hover:bg-gray-200 text-gray-800"
+        w-full flex items-center justify-between
+        p-3 rounded-xl transition-all duration-200
+        ${isSelected
+                          ? "bg-gray-900 text-white shadow-md"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-800"
                         }
-                      `}
+      `}
                     >
                       <div className="flex items-center gap-3">
-
-                        <div className={`
-                          p-2 rounded-full
-                          ${isSelected ? "bg-white/20" : "bg-white"}
-                        `}>
-                          <Icon size={18} />
+                        <div
+                          className={`
+            p-2 rounded-full
+            ${isSelected
+                              ? "bg-white/20"
+                              : "bg-white"
+                            }
+          `}
+                        >
+                          {Icon && <Icon size={18} />}
                         </div>
 
                         <div className="text-left">
@@ -161,21 +179,25 @@ export default function OrderPage() {
                             {vehicle.name}
                           </p>
 
-                          <p className={`
-                            text-xs
-                            ${
-                              isSelected
+                          <p
+                            className={`
+              text-xs
+              ${isSelected
                                 ? "text-gray-300"
                                 : "text-gray-500"
-                            }
-                          `}>
-                            {vehicle.desc}
+                              }
+            `}
+                          >
+                            {vehicle.description}
                           </p>
                         </div>
                       </div>
 
                       <p className="text-sm font-semibold">
-                        Rp {vehicle.price.toLocaleString()}
+                        Rp{" "}
+                        {vehicle.pricePerKm.toLocaleString(
+                          "id-ID"
+                        )}
                       </p>
                     </button>
                   );
